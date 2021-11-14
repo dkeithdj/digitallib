@@ -10,7 +10,7 @@ public class Utils {
   // Initializes connection to MySQL
   public static Connection connectToDB() {
     try {
-      String DBurl = "jdbc:mysql://localhost:3306/library";
+      String DBurl = "jdbc:mysql://localhost:3306/mysql";
       String DBuser = "root";
       String DBpassword = "root";
 
@@ -30,6 +30,7 @@ public class Utils {
 
      try {
        Statement stmt = con.createStatement();
+       stmt.executeUpdate("USE library");
        ResultSet rs = stmt.executeQuery("select count(*) from " + tableName);
        rs.next();
        return rs.getInt(1);
@@ -37,5 +38,24 @@ public class Utils {
       System.out.println(e);
      }
      return 0;
+  }
+  public static boolean hasDatabaseSetup() {
+    boolean hasDB = false;
+    try {
+      Connection con = Utils.connectToDB();
+
+      ResultSet rSet = con.getMetaData().getCatalogs();
+
+      while (rSet.next()) {
+        String DBName = rSet.getString(1);
+        if (DBName.equals("library")) {
+          hasDB = true;
+          return hasDB;
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return hasDB;
   }
 }
