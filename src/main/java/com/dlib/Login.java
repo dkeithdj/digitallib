@@ -17,8 +17,10 @@ public class Login {
   private static JTextField userNInput;
   private static JPasswordField userPInput;
 
-  private static JPanel pnlMain;
-  private static JPanel pnlLog;
+  private static JPanel pnlMain, pnlLog;
+  private static JLabel userName, userPass;
+
+  private static JButton loginButton;
 
   private static JFrame frm;
 
@@ -35,13 +37,13 @@ public class Login {
     // pnlLog.setBorder(new TitledBorder("Existing Users"));;
 
     // login panel
-    JLabel userName = new JLabel("Username: ");
+    userName = new JLabel("Username: ");
     userNInput = new JTextField("", 15);
-    JLabel userPass = new JLabel("User Password: ");
+    userPass = new JLabel("User Password: ");
     userPInput = new JPasswordField("", 15);
     userPInput.setEchoChar('*');
 
-    JButton loginButton = new JButton("Login");
+    loginButton = new JButton("Login");
     loginButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         String accName = userNInput.getText();

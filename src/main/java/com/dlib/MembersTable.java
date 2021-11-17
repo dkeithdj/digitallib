@@ -12,6 +12,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import com.dlib.manageTables.ManageMembers;
+
 import net.miginfocom.swing.MigLayout;
 
 public class MembersTable {
@@ -19,7 +21,6 @@ public class MembersTable {
   public static JTable memTable;
 
   private static String tableName = "members";
-  // private static JFrame frm;
 
   public static JPanel membersTable() {
 

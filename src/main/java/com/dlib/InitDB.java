@@ -48,9 +48,10 @@ public class InitDB {
                   + "publishYear VARCHAR(50) NOT NULL)";
       String qryIB = "CREATE TABLE issuedBooks("
                   + "ib_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-                  + "u_id INT NOT NULL,"
+                  + "m_id INT NOT NULL,"
                   + "b_id INT NOT NULL,"
-                  + "brwName VARCHAR(150) NOT NULL,"
+                  + "brwrLName VARCHAR(50) NOT NULL,"
+                  + "bookTitle VARCHAR(50) NOT NULL,"
                   + "issuedDate VARCHAR(50) NOT NULL,"
                   + "borrowPeriod INT NOT NULL,"
                   + "returnDate VARCHAR(50) NOT NULL)";

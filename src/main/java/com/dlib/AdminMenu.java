@@ -37,8 +37,9 @@ public class AdminMenu {
       rPnl.add(backReset);
       mPnl.add(BooksTable.booksTable(), "grow");
       mPnl.add(rPnl, "grow, top");
+
       frm.add(mPnl);
-      frm.setSize(1000, 400);
+      frm.setSize(1000, 500);
       frm.setVisible(true);
       frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

@@ -7,19 +7,63 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
+
+import com.dlib.manageTables.ManageBooks;
 
 import net.miginfocom.swing.MigLayout;
 
 public class BooksTable {
+
   private static String tableName = "books";
+  public static JTable bookTable;
 
   public static JPanel booksTable() {
+
+    // Gui layout starts here
+    bookTable = new JTable();
+    bookTable.setModel(showBooksTable());
+    bookTable.getTableHeader().setReorderingAllowed(false);
+    bookTable.setShowGrid(true);
+    bookTable.setShowVerticalLines(true);
+    bookTable.setAutoCreateRowSorter(true);
+    bookTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+    JScrollPane pane = new JScrollPane(bookTable);
+
+    JPanel panel = new JPanel();
+    JButton addBook = new JButton("Add");
+    addBook.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        ManageBooks.addBook();
+      }
+    });
+    JButton editBook = new JButton("Edit");
+    editBook.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        ManageBooks.editBook();
+      }
+    });
+    JButton remBook = new JButton("Remove");
+    remBook.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        ManageBooks.removeBook();
+      }
+    });
+
+    panel.setLayout(new MigLayout("insets 5 5 5 5, fill, debug", "", ""));
+    panel.add(pane, "wrap, grow");
+    panel.add(addBook, "split, right, top");
+    panel.add(editBook, "top");
+    panel.add(remBook, "top");
+
+    return panel;
+  }
+
+  public static DefaultTableModel showBooksTable() {
 
     Connection con = Utils.connectToDB();
 
@@ -50,57 +94,17 @@ public class BooksTable {
         i++;
       }
 
-      TableModel model = new DefaultTableModel(data, col) {
+      DefaultTableModel model = new DefaultTableModel(data, col) {
         @Override
         public boolean isCellEditable(int row, int column) {
           // all cells false
           return false;
         }
       };
-
-      // Gui layout starts here
-      JTable table = new JTable(model);
-      table.getTableHeader().setReorderingAllowed(false);
-      table.setShowGrid(true);
-      table.setShowVerticalLines(true);
-      table.setAutoCreateRowSorter(true);
-      table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-      JScrollPane pane = new JScrollPane(table);
-
-      JPanel panel = new JPanel();
-      JButton addBook = new JButton("Add");
-      addBook.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          ManageBooks.addBook();
-        }
-      });
-      JButton editBook = new JButton("Edit");
-      editBook.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          ManageBooks.editBook();
-        }
-      });
-      JButton remBook = new JButton("Remove");
-      remBook.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          ManageBooks.removeBook();
-        }
-      });
-
-      panel.setLayout(new MigLayout("insets 5 5 5 5, fill, debug", "", ""));
-      panel.add(pane, "wrap, grow");
-      panel.add(addBook, "split, right, top");
-      panel.add(editBook, "top");
-      panel.add(remBook, "top");
-
-      con.close();
-      return panel;
+      return model;
     } catch (Exception e) {
       System.out.println(e);
     }
     return null;
-
   }
-
 }
