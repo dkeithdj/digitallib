@@ -63,7 +63,7 @@ public class Utils {
     return hasDB;
   }
 
-  public static boolean doesIdExist(String tableName, String qry, JFrame frm) {
+  public static boolean doesIdExist(String tableName, String qry) {
     boolean status = false;
     Connection con = connectToDB();
     try {

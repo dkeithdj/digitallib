@@ -66,8 +66,8 @@ public class ManageIssBooks {
           JOptionPane.showMessageDialog(frm, "There's an empty field!");
         } else {
 
-          boolean midExists = Utils.doesIdExist("members", checkMID, frm);
-          boolean bidExists = Utils.doesIdExist("books", checkBID, frm);
+          boolean midExists = Utils.doesIdExist("members", checkMID);
+          boolean bidExists = Utils.doesIdExist("books", checkBID);
 
           if ((midExists && bidExists) == true) {
 
@@ -194,7 +194,7 @@ public class ManageIssBooks {
             Statement pstmt = con.createStatement();
             pstmt.executeUpdate("USE library");
 
-            boolean midExists = Utils.doesIdExist("issuedBooks", checkIBID, frm);
+            boolean midExists = Utils.doesIdExist("issuedBooks", checkIBID);
 
             if (midExists == true) {
               ResultSet rs = pstmt.executeQuery(getIBIDValues);
@@ -242,16 +242,15 @@ public class ManageIssBooks {
           JOptionPane.showMessageDialog(frm, "There's an empty field!");
         } else {
 
-          boolean ibidExists = Utils.doesIdExist("issuedBooks", checkIBID, frm);
+          boolean ibidExists = Utils.doesIdExist("issuedBooks", checkIBID);
 
           if (ibidExists == true) {
             Utils.IBUpdate(sqBID, sqIBID, dateToday, frm);
 
-            issueStatus.setText("Status: MID and BID found");
+            issueStatus.setText("Status: Returned");
           } else {
-            issueStatus.setText("Status: MID or BID not found");
-            midIn.setText("");
-            bidIn.setText("");
+            issueStatus.setText("Status: IBID not found");
+            ibidIn.setText("");
           }
         }
         BooksTable.bookTable.setModel(BooksTable.showBooksTable());
@@ -322,16 +321,16 @@ public class ManageIssBooks {
 
             if (rs.next() == true) {
               String retDateValue = rs.getString("returnDate");
-              if (retDateValue.equals("-")) {
-                JOptionPane.showMessageDialog(frm, "Book has not been returned yet");
+              if (!retDateValue.equals("-")) {
+                pstmt.executeUpdate(delQry);
+                JOptionPane.showMessageDialog(frm, "Issue Removed!");
               } else {
-                if (pstmt.executeUpdate(delQry) > 0) {
-                  JOptionPane.showMessageDialog(frm, "Issue Removed!");
-                } else {
-                  JOptionPane.showMessageDialog(frm, "IBID doesn't exist");
-                }
+                JOptionPane.showMessageDialog(frm, "Book has not been returned yet");
               }
+            } else {
+              JOptionPane.showMessageDialog(frm, "IBID doesn't exist");
             }
+
           } catch (Exception ex) {
             JOptionPane.showMessageDialog(frm, "Unable to remove issued, try again");
             ex.printStackTrace();
@@ -343,15 +342,13 @@ public class ManageIssBooks {
     });
     if (Utils.getTableRowNum("issuedBooks") == 0) {
       ibidIn.setEnabled(false);
-      validateIBID.setEnabled(false);
+      ibidIn.setText("Nothing to remove");
       remIssBook.setEnabled(false);
-      issueStatus.setText("Status: Nothing to remove");
     }
 
     pnl.add(ibIBID);
     pnl.add(ibidIn);
-    pnl.add(issueStatus);
-    pnl.add(remIssBook, "split, right");
+    pnl.add(remIssBook, "skip, split, right");
 
     frm.add(pnl);
     frm.setVisible(true);
