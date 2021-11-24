@@ -1,19 +1,10 @@
 package com.dlib;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
 import java.sql.Statement;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import net.miginfocom.swing.MigLayout;
 public class InitDB {
 
   public static void initializeDB() {
@@ -22,11 +13,12 @@ public class InitDB {
 
       ResultSet rSet = con.getMetaData().getCatalogs();
 
+      String libraryDB = "library";
       while (rSet.next()) {
         String DBName = rSet.getString(1);
-        if (DBName.equals("library")) {
+        if (libraryDB.equals(DBName)) {
           Statement inStmt = con.createStatement();
-          inStmt.executeQuery("DROP DATABASE library");
+          inStmt.executeUpdate("DROP DATABASE library");
         }
       }
       Statement inStmt = con.createStatement();
@@ -61,40 +53,14 @@ public class InitDB {
         inStmt.executeUpdate(listQry[i]);
       }
       rSet.close();
-      AdminMenu.adminPage();
     } catch (Exception ex) {
       ex.printStackTrace();
     }
   }
 
-  private static JFrame initFrm;
-
-  public static void initializeConf() {
-    initFrm = new JFrame("Initialize");
-
-    JPanel initPnl = new JPanel(new MigLayout("fill", "", ""));
-    JLabel initDesc = new JLabel("Press button to Create/Reset");
-      JButton initButton = new JButton("IInitializenitialize");
-      initButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          try {
-            Runtime.getRuntime().exec("test.bat");
-          } catch (IOException e1) {
-            e1.printStackTrace();
-          }
-          // initFrm.dispose();
-          // AdminMenu.adminPage();
-          // InitDB.initializeDB();
- 
-            
-        }
-      });
-
-      initPnl.add(initDesc, "wrap, center");
-      initPnl.add(initButton, "center");
-      initFrm.add(initPnl);
-      initFrm.setSize(200, 100);
-      initFrm.setVisible(true);
-      initFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  public static void redirectToAdPage() {
+    InitDB.initializeDB();
+    AdminMenu.adminPage();
   }
+
 }

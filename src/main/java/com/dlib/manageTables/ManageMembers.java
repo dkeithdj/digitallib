@@ -99,6 +99,7 @@ public class ManageMembers {
     frm.add(pnl);
     frm.setVisible(true);
     frm.pack();
+    frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 
@@ -253,6 +254,7 @@ public class ManageMembers {
     frm.add(pnl);
     frm.setVisible(true);
     frm.pack();
+    frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 
@@ -312,6 +314,7 @@ public class ManageMembers {
     frm.add(pnl);
     frm.setVisible(true);
     frm.pack();
+    frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 

@@ -32,7 +32,7 @@ public class Login {
     frm = new JFrame("Login");
     pnlMain = new JPanel();
     pnlLog = new JPanel();
-    pnlMain.setLayout(new MigLayout("debug, fill", "", ""));
+    pnlMain.setLayout(new MigLayout("fill", "", ""));
     pnlLog.setLayout(new MigLayout("wrap", "[][]", ""));
     // pnlLog.setBorder(new TitledBorder("Existing Users"));;
 
@@ -55,10 +55,7 @@ public class Login {
         else {
           if (accName.equals(adminUName) && accPass.equals(adminPass)) {
             frm.dispose();
-            // MembersTable.membersTable();
-            // AddBooks.addBooks();
             AdminMenu.adminPage();
-            // AdminMenu.hasDatabaseSetup();
           }
           else {
             JOptionPane.showMessageDialog(null, "Incorrect Username/Password");
@@ -75,10 +72,10 @@ public class Login {
 
     pnlMain.add(pnlLog, "top");
 
-    // frm.setResizable(false);
     frm.add(pnlMain);
-    frm.setSize(310, 150);
+    frm.pack();
     frm.setVisible(true);
+    frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 }

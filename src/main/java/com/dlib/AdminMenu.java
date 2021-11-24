@@ -12,39 +12,44 @@ import net.miginfocom.swing.MigLayout;
 public class AdminMenu {
 
   private static JFrame frm;
+  private static JPanel mPnl, rPnl;
+
+  private static JButton showIB, manageDB;
 
   public static void adminPage() {
     frm = new JFrame("Admin");
 
-    JPanel mPnl = new JPanel(new MigLayout("debug, fill, insets 0 0 0 0", "[60%]0[40%]", ""));
-    JPanel rPnl = new JPanel(new MigLayout("debug, fill, insets 0 0 0 0, wrap, center", "[][]", "[90%][10%]"));
+    mPnl = new JPanel(new MigLayout("fill, insets 0 0 0 0", "[60%][40%]", ""));
+    rPnl = new JPanel(new MigLayout("fill, insets 0 0 0 0, wrap, center", "[][]", "[95%][5%]"));
 
-    JButton showIB = new JButton("Show Issued Books");
+    showIB = new JButton("Show Issued Books");
     showIB.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         IssuedBooksTable.issuedBooksTable();
       }
     });
-    JButton backReset = new JButton("Backup and Reset");
-    backReset.addActionListener(new ActionListener() {
+    manageDB = new JButton("Manage Database");
+    manageDB.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        ManageDB.manDB();
       }
     });
 
     if (Utils.hasDatabaseSetup() == true) {
       rPnl.add(MembersTable.membersTable(), "grow, span");
-      rPnl.add(showIB);
-      rPnl.add(backReset);
+      rPnl.add(showIB, "split, skip, right");
+      rPnl.add(manageDB, "right");
       mPnl.add(BooksTable.booksTable(), "grow");
-      mPnl.add(rPnl, "grow, top");
+      mPnl.add(rPnl, "grow");
 
       frm.add(mPnl);
       frm.setSize(1000, 500);
       frm.setVisible(true);
+      frm.setLocationRelativeTo(null);
       frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     } else {
-      InitDB.initializeDB();
+      InitDB.redirectToAdPage();
     }
   }
 }

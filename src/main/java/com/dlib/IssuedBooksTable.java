@@ -59,7 +59,7 @@ public class IssuedBooksTable {
       }
     });
     
-    panel.setLayout(new MigLayout("insets 5 5 5 5, fill, debug", "", ""));
+    panel.setLayout(new MigLayout("insets 5 5 5 5, fill", "", ""));
     panel.add(pane, "wrap, grow");
     panel.add(issueBook, "split, right");
     panel.add(returnBook);
@@ -68,6 +68,7 @@ public class IssuedBooksTable {
     frm.add(panel);
     frm.setVisible(true);
     frm.pack();
+    frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
   }

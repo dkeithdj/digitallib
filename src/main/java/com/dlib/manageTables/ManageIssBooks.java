@@ -46,6 +46,8 @@ public class ManageIssBooks {
     ibBrwDate = new JLabel("Borrow Date: ");
     issueStatus = new JLabel("Status: ");
 
+    final JTextField[] txtFields = {midIn,bidIn,durationIn};
+
     DateTimeFormatter brwDate = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     LocalDate today = LocalDate.now();
     final String dateToday = today.format(brwDate);
@@ -115,6 +117,9 @@ public class ManageIssBooks {
             bidIn.setText("");
           }
         }
+        for (int i = 0; i < txtFields.length; i++) {
+          txtFields[i].setText("");
+        }
         BooksTable.bookTable.setModel(BooksTable.showBooksTable());
         IssuedBooksTable.issTable.setModel(IssuedBooksTable.showIssBooksTable());
       }
@@ -133,6 +138,7 @@ public class ManageIssBooks {
     frm.add(pnl);
     frm.setVisible(true);
     frm.pack();
+    frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
   }
@@ -211,6 +217,7 @@ public class ManageIssBooks {
                 }
               }
               issueStatus.setText("Status: IBID Exists");
+              ibidIn.setText("");
               retBook.setEnabled(true);
             } else {
               for (int i = 0; i < txtInputs.length; i++) {
@@ -253,6 +260,10 @@ public class ManageIssBooks {
             ibidIn.setText("");
           }
         }
+
+        for (int i = 0; i < txtInputs.length; i++) {
+          txtInputs[i].setText("");
+        }
         BooksTable.bookTable.setModel(BooksTable.showBooksTable());
         IssuedBooksTable.issTable.setModel(IssuedBooksTable.showIssBooksTable());
       }
@@ -289,6 +300,7 @@ public class ManageIssBooks {
     frm.add(pnl);
     frm.setVisible(true);
     frm.pack();
+    frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
   public static void remIssBook() {
@@ -353,6 +365,7 @@ public class ManageIssBooks {
     frm.add(pnl);
     frm.setVisible(true);
     frm.pack();
+    frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 }

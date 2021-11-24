@@ -55,7 +55,7 @@ public class MembersTable {
       }
     });
 
-    panel.setLayout(new MigLayout("insets 5 5 5 5, fill, debug", "", ""));
+    panel.setLayout(new MigLayout("insets 5 5 5 5, fill", "", ""));
     panel.add(pane, "wrap, grow");
     panel.add(addMember, "split, right, top");
     panel.add(editMember, "top");

@@ -106,6 +106,7 @@ public class ManageBooks {
     frm.add(pnl);
     frm.setVisible(true);
     frm.pack();
+    frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 
@@ -270,6 +271,7 @@ public class ManageBooks {
     frm.add(pnl);
     frm.setVisible(true);
     frm.pack();
+    frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 
@@ -328,6 +330,7 @@ public class ManageBooks {
     frm.add(pnl);
     frm.setVisible(true);
     frm.pack();
+    frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 
