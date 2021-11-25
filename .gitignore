@@ -1,5 +1,4 @@
 # Ignore target
-target
+target/**
 .settings
 .vscode
-target
