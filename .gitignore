@@ -1,14 +1,5 @@
 # Ignore target
 target
 .settings
-.settings
-.settings
-.settings
-.vscode
-.settings
-.vscode
-.settings
 .vscode
 target
-target/maven-status/maven-compiler-plugin/testCompile/default-testCompile
-data/libraryDB11252021-1401.sql
