@@ -73,7 +73,7 @@ public class ManageIssBooks {
 
           if ((midExists && bidExists) == true) {
 
-            String qry1 = "INSERT INTO issuedBooks(m_id,b_id,brwrLName,bookTitle,issuedDate,borrowPeriod,returnDate)";
+            String qry1 = "INSERT INTO issuedBooks(m_id,b_id,brwrLName,bookTitle,issuedDate,borrowPeriod,returnDate,overdued)";
             String qry2a = ("(SELECT m_id FROM members WHERE m_id="+sqMID+")");
             String qry2b = ("(SELECT b_id FROM books WHERE b_id="+sqBID+")");
             String qry2c = ("(SELECT lastName FROM members WHERE m_id="+sqMID+")");
@@ -81,8 +81,9 @@ public class ManageIssBooks {
             String qry2e = ("('"+dateToday+"')");
             String qry2f = ("("+sqDuration+")");
             String qry2g = ("('-')");
+            String qry2h = ("('-')");
 
-            String qry0 = String.format("%s VALUES(%s,%s,%s,%s,%s,%s,%s)", qry1,qry2a,qry2b,qry2c,qry2d,qry2e,qry2f,qry2g);
+            String qry0 = String.format("%s VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", qry1,qry2a,qry2b,qry2c,qry2d,qry2e,qry2f,qry2g,qry2h);
 
             Connection con = Utils.connectToDB();
             try {
@@ -217,7 +218,6 @@ public class ManageIssBooks {
                 }
               }
               issueStatus.setText("Status: IBID Exists");
-              ibidIn.setText("");
               retBook.setEnabled(true);
             } else {
               for (int i = 0; i < txtInputs.length; i++) {
@@ -255,6 +255,7 @@ public class ManageIssBooks {
             Utils.IBUpdate(sqBID, sqIBID, dateToday, frm);
 
             issueStatus.setText("Status: Returned");
+            ibidIn.setText("");
           } else {
             issueStatus.setText("Status: IBID not found");
             ibidIn.setText("");
@@ -264,6 +265,8 @@ public class ManageIssBooks {
         for (int i = 0; i < txtInputs.length; i++) {
           txtInputs[i].setText("");
         }
+
+
         BooksTable.bookTable.setModel(BooksTable.showBooksTable());
         IssuedBooksTable.issTable.setModel(IssuedBooksTable.showIssBooksTable());
       }

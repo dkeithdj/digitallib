@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -87,9 +90,11 @@ public class Utils {
       Statement stmt = con.createStatement();
       stmt.executeUpdate("USE library");
 
-      ResultSet rs = stmt.executeQuery("SELECT returnDate FROM issuedBooks where ib_id="+sqIBID);
+      ResultSet rs = stmt.executeQuery("SELECT borrowPeriod,issuedDate,returnDate FROM issuedBooks where ib_id="+sqIBID);
 
       if (rs.next() == true) {
+        int duration = rs.getInt("borrowPeriod");
+        String brwDateValue = rs.getString("issuedDate");
         String retDateValue = rs.getString("returnDate");
         if (retDateValue.equals("-")) {
           rs = stmt.executeQuery("SELECT quantity,issued FROM books where b_id=" + sqBID);
@@ -109,6 +114,9 @@ public class Utils {
         } else {
           JOptionPane.showMessageDialog(frm, "Book already returned");
         }
+        String overdued = isOverdue(sqIBID, duration, brwDateValue, dateToday);
+        stmt.executeUpdate("UPDATE issuedBooks SET overdued='"+overdued+"' WHERE ib_id="+sqIBID);
+
       }
 
     } catch (Exception ex) {
@@ -116,4 +124,18 @@ public class Utils {
       ex.printStackTrace();
     }
   }
+
+  public static String isOverdue(String ibid,int duration, String borrowDate, String returnDate) {
+    LocalDate brwDate = LocalDate.parse(borrowDate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+    LocalDate retDate = LocalDate.parse(returnDate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+    Duration diff = Duration.between(brwDate.atStartOfDay(), retDate.atStartOfDay());
+    int period = (int) diff.toDays();
+
+    if (period <= duration) {
+      return "NO";
+    } else {
+      return "YES";
+    }
+  }
+
 }

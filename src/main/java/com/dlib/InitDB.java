@@ -46,7 +46,8 @@ public class InitDB {
                   + "bookTitle VARCHAR(50) NOT NULL,"
                   + "issuedDate VARCHAR(50) NOT NULL,"
                   + "borrowPeriod INT NOT NULL,"
-                  + "returnDate VARCHAR(50) NOT NULL)";
+                  + "returnDate VARCHAR(50) NOT NULL,"
+                  + "overdued VARCHAR(50) NOT NULL)";
 
       String[] listQry = {qry1,qry2,qryB,qryIB,qryM};  
       for (int i = 0; i < listQry.length; i++) {
