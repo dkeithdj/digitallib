@@ -20,8 +20,14 @@ import net.miginfocom.swing.MigLayout;
 public class IssuedBooksTable {
 
   private static String tableName = "issuedBooks";
-  public static JTable issTable;
+
   private static JFrame frm;
+  private static JPanel panel;
+
+  public static JTable issTable;
+  public static JScrollPane pane;
+
+  public static JButton issueBook, returnBook, remIssBook;
 
   public static void issuedBooksTable() {
 
@@ -36,23 +42,23 @@ public class IssuedBooksTable {
     issTable.setAutoCreateRowSorter(true);
     issTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-    JScrollPane pane = new JScrollPane(issTable);
+    pane = new JScrollPane(issTable);
 
-    JPanel panel = new JPanel();
+    panel = new JPanel();
 
-    JButton issueBook = new JButton("Issue Book");
+    issueBook = new JButton("Issue Book");
     issueBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         ManageIssBooks.issueBook();
       }
     });
-    JButton returnBook = new JButton("Return Book");
+    returnBook = new JButton("Return Book");
     returnBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         ManageIssBooks.returnBook();
       }
     });
-    JButton remIssBook = new JButton("Remove Issued");
+    remIssBook = new JButton("Remove Issued");
     remIssBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         ManageIssBooks.remIssBook();
@@ -67,7 +73,7 @@ public class IssuedBooksTable {
 
     frm.add(panel);
     frm.setVisible(true);
-    frm.pack();
+    frm.setSize(800, 500);
     frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -82,7 +88,7 @@ public class IssuedBooksTable {
       stmt.executeUpdate("USE library");
       ResultSet rs = stmt.executeQuery("select * from " + tableName);
 
-      String col[] = { "IBID", "MID", "BID", "LAST NAME", "BOOK TITLE", "DATE ISSUED", "DURATION", "DATE RETURNED" };
+      String col[] = { "IBID", "MID", "BID", "LAST NAME", "BOOK TITLE", "DATE ISSUED", "DURATION", "DATE RETURNED", "OVERDUED" };
       String data[][] = new String[Utils.getTableRowNum(tableName)][col.length];
 
       int i = 0;
@@ -95,9 +101,10 @@ public class IssuedBooksTable {
         String issuedDate = rs.getString("issuedDate");
         int brwPeriod = rs.getInt("borrowPeriod");
         String returnDate = rs.getString("returnDate");
+        String overdued = rs.getString("overdued");
 
         String details[] = { Integer.toString(ibid), Integer.toString(mid), Integer.toString(bid), lastName, bookTitle,
-            issuedDate, Integer.toString(brwPeriod), returnDate };
+            issuedDate, Integer.toString(brwPeriod), returnDate, overdued };
 
         for (int x = 0; x < details.length; x++) {
           data[i][x] = details[x];
