@@ -54,7 +54,7 @@ public class BooksTable {
       }
     });
 
-    panel.setLayout(new MigLayout("hidemode 2, wrap, fill, insets 5 5 5 5", "", "[]0[]"));
+    panel.setLayout(new MigLayout("wrap, fill, insets 0 0 0 0", "", "[100%][]"));
     panel.add(pane, "grow");
     panel.add(addBook, "split, right");
     panel.add(editBook);

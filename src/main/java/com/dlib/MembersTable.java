@@ -55,11 +55,11 @@ public class MembersTable {
       }
     });
 
-    panel.setLayout(new MigLayout("insets 5 5 5 5, fill", "", ""));
+    panel.setLayout(new MigLayout("insets 0 0 0 0, fill", "", "[100%][]"));
     panel.add(pane, "wrap, grow");
-    panel.add(addMember, "split, right, top");
-    panel.add(editMember, "top");
-    panel.add(remMember, "top");
+    panel.add(addMember, "shrink, split, right");
+    panel.add(editMember);
+    panel.add(remMember);
 
     return panel;
   }

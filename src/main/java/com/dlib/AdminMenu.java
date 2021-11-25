@@ -12,15 +12,14 @@ import net.miginfocom.swing.MigLayout;
 public class AdminMenu {
 
   private static JFrame frm;
-  private static JPanel mPnl, rPnl;
+  private static JPanel mPnl;
 
   private static JButton showIB, manageDB;
 
   public static void adminPage() {
     frm = new JFrame("Admin");
 
-    mPnl = new JPanel(new MigLayout("fill, insets 0 0 0 0", "[60%][40%]", ""));
-    rPnl = new JPanel(new MigLayout("fill, insets 0 0 0 0, wrap, center", "[][]", "[95%][5%]"));
+    mPnl = new JPanel(new MigLayout("fill, insets 5 5 5 5", "[60%][40%]", "[100%][]"));
 
     showIB = new JButton("Show Issued Books");
     showIB.addActionListener(new ActionListener() {
@@ -36,11 +35,10 @@ public class AdminMenu {
     });
 
     if (Utils.hasDatabaseSetup() == true) {
-      rPnl.add(MembersTable.membersTable(), "grow, span");
-      rPnl.add(showIB, "split, skip, right");
-      rPnl.add(manageDB, "right");
-      mPnl.add(BooksTable.booksTable(), "grow");
-      mPnl.add(rPnl, "grow");
+      mPnl.add(BooksTable.booksTable(), "spany 2, grow");
+      mPnl.add(MembersTable.membersTable(), "wrap, grow");
+      mPnl.add(showIB, "split, right");
+      mPnl.add(manageDB);
 
       frm.add(mPnl);
       frm.setSize(1000, 500);

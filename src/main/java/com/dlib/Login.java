@@ -34,7 +34,6 @@ public class Login {
     pnlLog = new JPanel();
     pnlMain.setLayout(new MigLayout("fill", "", ""));
     pnlLog.setLayout(new MigLayout("wrap", "[][]", ""));
-    // pnlLog.setBorder(new TitledBorder("Existing Users"));;
 
     // login panel
     userName = new JLabel("Username: ");

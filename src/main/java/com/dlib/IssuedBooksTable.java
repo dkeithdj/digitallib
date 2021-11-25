@@ -65,7 +65,7 @@ public class IssuedBooksTable {
       }
     });
     
-    panel.setLayout(new MigLayout("insets 5 5 5 5, fill", "", ""));
+    panel.setLayout(new MigLayout("insets 5 5 5 5, fill", "", "[100%][]"));
     panel.add(pane, "wrap, grow");
     panel.add(issueBook, "split, right");
     panel.add(returnBook);
