@@ -10,6 +10,6 @@
 
 > #### To run the project:
 >
-> do this inside your command prompt and go to the directory where *pom.xml* resides.
+> do this inside your command prompt and go to the directory where *pom.xml* resides.  
 > `mvn assembly:single`  
 > `java -jar target\[name of .jar file]`
