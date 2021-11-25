@@ -19,8 +19,11 @@ import net.miginfocom.swing.MigLayout;
 public class MembersTable {
 
   public static JTable memTable;
-
   private static String tableName = "members";
+  private static JPanel panel;
+
+  private static JScrollPane pane;
+  private static JButton addMember, editMember, remMember;
 
   public static JPanel membersTable() {
 
@@ -33,22 +36,22 @@ public class MembersTable {
     memTable.setAutoCreateRowSorter(true);
     memTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-    JScrollPane pane = new JScrollPane(memTable);
+    pane = new JScrollPane(memTable);
 
-    JPanel panel = new JPanel();
-    JButton addMember = new JButton("Add");
+    panel = new JPanel();
+    addMember = new JButton("Add");
     addMember.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         ManageMembers.addMember();
       }
     });
-    JButton editMember = new JButton("Edit");
+    editMember = new JButton("Edit");
     editMember.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         ManageMembers.editMember();
       }
     });
-    JButton remMember = new JButton("Remove");
+    remMember = new JButton("Remove");
     remMember.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         ManageMembers.removeMember();

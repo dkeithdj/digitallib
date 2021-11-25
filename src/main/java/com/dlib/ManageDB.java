@@ -16,9 +16,6 @@ import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
 
-/**
- * BackupReset
-*/
 public class ManageDB {
 
   private static JFrame frm;

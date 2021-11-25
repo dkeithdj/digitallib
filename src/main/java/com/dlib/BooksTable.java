@@ -18,8 +18,14 @@ import net.miginfocom.swing.MigLayout;
 
 public class BooksTable {
 
-  private static String tableName = "books";
   public static JTable bookTable;
+
+  private static JPanel panel;
+  private static String tableName = "books";
+
+  private static JScrollPane pane;
+
+  private static JButton addBook, editBook, remBook;
 
   public static JPanel booksTable() {
 
@@ -32,22 +38,22 @@ public class BooksTable {
     bookTable.setAutoCreateRowSorter(true);
     bookTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-    JScrollPane pane = new JScrollPane(bookTable);
+    pane = new JScrollPane(bookTable);
 
-    JPanel panel = new JPanel();
-    JButton addBook = new JButton("Add");
+    panel = new JPanel();
+    addBook = new JButton("Add");
     addBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         ManageBooks.addBook();
       }
     });
-    JButton editBook = new JButton("Edit");
+    editBook = new JButton("Edit");
     editBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         ManageBooks.editBook();
       }
     });
-    JButton remBook = new JButton("Remove");
+    remBook = new JButton("Remove");
     remBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         ManageBooks.removeBook();

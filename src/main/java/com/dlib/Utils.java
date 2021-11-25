@@ -46,6 +46,7 @@ public class Utils {
     return 0;
   }
 
+  // checks if a database exist
   public static boolean hasDatabaseSetup() {
     boolean hasDB = false;
     try {
@@ -66,6 +67,7 @@ public class Utils {
     return hasDB;
   }
 
+  // checks if a specific id inside a database table exists
   public static boolean doesIdExist(String tableName, String qry) {
     boolean status = false;
     Connection con = connectToDB();
@@ -83,6 +85,7 @@ public class Utils {
     return status;
   }
 
+  // updates data of issued books
   public static void IBUpdate(String sqBID, String sqIBID, String dateToday, JFrame frm) {
 
     Connection con = Utils.connectToDB();
@@ -125,6 +128,7 @@ public class Utils {
     }
   }
 
+  // checks if issued books is overdued
   public static String isOverdue(String ibid,int duration, String borrowDate, String returnDate) {
     LocalDate brwDate = LocalDate.parse(borrowDate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
     LocalDate retDate = LocalDate.parse(returnDate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
