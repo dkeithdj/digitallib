@@ -10,10 +10,8 @@
 
 #### To run the project:
 
-do this inside your command prompt and go to the directory where *pom.xml* resides.  
-`mvn compile`  
-`mvn assembly:single`  
-`java -jar target\[name of .jar file]`
+Run `initialize.bat` to compile and export the project to a .jar file  
+then run `digitalLibrary.bat` to start the project.
 
 #### Demo
 
