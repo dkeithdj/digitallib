@@ -17,4 +17,4 @@ do this inside your command prompt and go to the directory where *pom.xml* resid
 
 #### Demo
 
-![] (https://github.com/dkeithdj/digitallib/blob/main/demo/demoDigitalLibrary.gif)
+! [] (https://github.com/dkeithdj/digitallib/blob/main/demo/demoDigitalLibrary.gif)
