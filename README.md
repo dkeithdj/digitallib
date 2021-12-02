@@ -5,6 +5,7 @@
  
 - MySQL
 - maven
+- Java
 
 **NOTE:** Make sure these dependencies are on your system path
 
