@@ -2,8 +2,8 @@
 
 echo initializing . . .
 
-call mvn -q clean compile
-call mvn -q assembly:single
+call mvn clean compile
+call mvn assembly:single
 
 echo done.
 pause
