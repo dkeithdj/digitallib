@@ -108,7 +108,7 @@ public class ManageDB {
           try {
             Process proc = new ProcessBuilder(command).start();
             proc.waitFor();
-            statusImport.setText("File imported!");
+            statusImport.setText("Status: File imported!");
             fileNameIn.setText("");
           } catch (IOException e1) {
             e1.printStackTrace();

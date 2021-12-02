@@ -357,7 +357,7 @@ public class ManageIssBooks {
     });
     if (Utils.getTableRowNum("issuedBooks") == 0) {
       ibidIn.setEnabled(false);
-      ibidIn.setText("Nothing to remove");
+      ibidIn.setText("");
       remIssBook.setEnabled(false);
     }
 
