@@ -31,7 +31,7 @@ CREATE TABLE `books` (
   `issued` int NOT NULL,
   `publishYear` varchar(50) NOT NULL,
   PRIMARY KEY (`b_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `books` (
 
 LOCK TABLES `books` WRITE;
 /*!40000 ALTER TABLE `books` DISABLE KEYS */;
-INSERT INTO `books` VALUES (1,'Angels and Demons','Dan Brown','Thriller',4,1,'2000'),(2,'Illuminae','Henry Kaufman','Sci-Fi',1,2,'2016');
+INSERT INTO `books` VALUES (1,'Angels & Demons','Dan Brown','Thriller',5,0,'2000'),(2,'Illuminae',' Amie Kaufman, Jay Kristoff','Sci-Fi',4,0,'2015'),(3,'Legend','Marie Lu','Thriller',6,0,'2011'),(4,'My First Encyclopedia of Animals','Macmillan Us','Educational',4,0,'2020'),(5,'Guinness World Records: Gamer\'s Edition 2020','Guinnes World Records','Educational',1,1,'2020');
 /*!40000 ALTER TABLE `books` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -62,7 +62,7 @@ CREATE TABLE `issuedbooks` (
   `returnDate` varchar(50) NOT NULL,
   `overdued` varchar(50) NOT NULL,
   PRIMARY KEY (`ib_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -71,7 +71,7 @@ CREATE TABLE `issuedbooks` (
 
 LOCK TABLES `issuedbooks` WRITE;
 /*!40000 ALTER TABLE `issuedbooks` DISABLE KEYS */;
-INSERT INTO `issuedbooks` VALUES (5,1,1,'Keith','Angels and Demons','11/25/2021',0,'11/26/2021','YES'),(6,3,2,'Sung','Illuminae','11/25/2021',0,'11/26/2021','YES'),(7,2,1,'Haki','Angels and Demons','11/25/2021',1,'-','-'),(8,2,2,'Haki','Illuminae','11/25/2021',1,'-','-'),(9,1,2,'Keith','Illuminae','11/25/2021',0,'-','-');
+INSERT INTO `issuedbooks` VALUES (1,1,5,'De Jesus','Guinness World Records: Gamer\'s Edition 2020','12/12/2021',0,'-','-');
 /*!40000 ALTER TABLE `issuedbooks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -89,7 +89,7 @@ CREATE TABLE `members` (
   `address` varchar(150) NOT NULL,
   `contact` varchar(100) NOT NULL,
   PRIMARY KEY (`m_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,7 +98,7 @@ CREATE TABLE `members` (
 
 LOCK TABLES `members` WRITE;
 /*!40000 ALTER TABLE `members` DISABLE KEYS */;
-INSERT INTO `members` VALUES (1,'Denrei','Keith','Nab','09234'),(2,'John','Haki','Davao','09432234'),(3,'Sam','Sung','Davao','0923425');
+INSERT INTO `members` VALUES (1,'Denrei Keith','De Jesus','Nabunturan','091734328'),(2,'Karl','Andoque','Davao','09873871'),(3,'Joshua Roi','Nomus','Davao','093452896');
 /*!40000 ALTER TABLE `members` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -111,4 +111,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-12-02 15:23:16
+-- Dump completed on 2021-12-13 15:35:28
