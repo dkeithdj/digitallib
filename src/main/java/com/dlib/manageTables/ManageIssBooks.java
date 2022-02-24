@@ -15,8 +15,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.dlib.BooksTable;
 import com.dlib.IssuedBooksTable;
+import com.dlib.TableOf;
 import com.dlib.Utils;
 
 import net.miginfocom.swing.MigLayout;
@@ -29,6 +29,7 @@ public class ManageIssBooks {
   private static JLabel ibIBID, ibMID, ibBID, ibLName, ibBTitle, ibBrwDate, ibDuration, ibRetDate, issueStatus;
   private static JTextField ibidIn, midIn, bidIn, lNameIn, bTitleIn, brwDateIn, durationIn, retDateIn;
   private static JButton retBook, issBook, validateIBID, remIssBook;
+  private static TableOf manIssBook = new TableOf("issuedBooks", IssuedBooksTable.col);
 
   public static void issueBook() {
 
@@ -46,7 +47,7 @@ public class ManageIssBooks {
     ibBrwDate = new JLabel("Borrow Date: ");
     issueStatus = new JLabel("Status: ");
 
-    final JTextField[] txtFields = {midIn,bidIn,durationIn};
+    final JTextField[] txtFields = { midIn, bidIn, durationIn };
 
     DateTimeFormatter brwDate = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     LocalDate today = LocalDate.now();
@@ -74,16 +75,17 @@ public class ManageIssBooks {
           if ((midExists && bidExists) == true) {
 
             String qry1 = "INSERT INTO issuedBooks(m_id,b_id,brwrLName,bookTitle,issuedDate,borrowPeriod,returnDate,overdued)";
-            String qry2a = ("(SELECT m_id FROM members WHERE m_id="+sqMID+")");
-            String qry2b = ("(SELECT b_id FROM books WHERE b_id="+sqBID+")");
-            String qry2c = ("(SELECT lastName FROM members WHERE m_id="+sqMID+")");
-            String qry2d = ("(SELECT title FROM books WHERE b_id="+sqBID+")");
-            String qry2e = ("('"+dateToday+"')");
-            String qry2f = ("("+sqDuration+")");
+            String qry2a = ("(SELECT m_id FROM members WHERE m_id=" + sqMID + ")");
+            String qry2b = ("(SELECT b_id FROM books WHERE b_id=" + sqBID + ")");
+            String qry2c = ("(SELECT lastName FROM members WHERE m_id=" + sqMID + ")");
+            String qry2d = ("(SELECT title FROM books WHERE b_id=" + sqBID + ")");
+            String qry2e = ("('" + dateToday + "')");
+            String qry2f = ("(" + sqDuration + ")");
             String qry2g = ("('-')");
             String qry2h = ("('-')");
 
-            String qry0 = String.format("%s VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", qry1,qry2a,qry2b,qry2c,qry2d,qry2e,qry2f,qry2g,qry2h);
+            String qry0 = String.format("%s VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", qry1, qry2a, qry2b, qry2c, qry2d, qry2e,
+                qry2f, qry2g, qry2h);
 
             Connection con = Utils.connectToDB();
             try {
@@ -97,12 +99,12 @@ public class ManageIssBooks {
                 int issueCount = rs.getInt("issued");
                 if (quantCount != 0) {
                   stmt.executeUpdate(qry0);
-                  quantCount-=1;
-                  issueCount+=1;
-                  stmt.executeUpdate("UPDATE books SET quantity="+quantCount+",issued="+issueCount+" WHERE b_id="+sqBID);
+                  quantCount -= 1;
+                  issueCount += 1;
+                  stmt.executeUpdate(
+                      "UPDATE books SET quantity=" + quantCount + ",issued=" + issueCount + " WHERE b_id=" + sqBID);
                   issueStatus.setText("Status: Successfully issued book");
-                }
-                else {
+                } else {
                   JOptionPane.showMessageDialog(frm, "Out of stock");
                 }
               }
@@ -121,8 +123,8 @@ public class ManageIssBooks {
         for (int i = 0; i < txtFields.length; i++) {
           txtFields[i].setText("");
         }
-        BooksTable.bookTable.setModel(BooksTable.showBooksTable());
-        IssuedBooksTable.issTable.setModel(IssuedBooksTable.showIssBooksTable());
+        // refresh the table
+        IssuedBooksTable.issTable.setModel(manIssBook.setupTable());
       }
     });
 
@@ -169,7 +171,7 @@ public class ManageIssBooks {
     retDateIn = new JTextField("", 15);
     issueStatus = new JLabel("Status: ");
 
-    final JTextField[] txtInputs = {midIn,bidIn,lNameIn,bTitleIn,brwDateIn,durationIn,retDateIn};
+    final JTextField[] txtInputs = { midIn, bidIn, lNameIn, bTitleIn, brwDateIn, durationIn, retDateIn };
 
     DateTimeFormatter brwDate = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     LocalDate today = LocalDate.now();
@@ -266,9 +268,8 @@ public class ManageIssBooks {
           txtInputs[i].setText("");
         }
 
-
-        BooksTable.bookTable.setModel(BooksTable.showBooksTable());
-        IssuedBooksTable.issTable.setModel(IssuedBooksTable.showIssBooksTable());
+        // refresh the table
+        IssuedBooksTable.issTable.setModel(manIssBook.setupTable());
       }
     });
 
@@ -306,6 +307,7 @@ public class ManageIssBooks {
     frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
+
   public static void remIssBook() {
 
     frm = new JFrame("Remove Book");
@@ -327,12 +329,12 @@ public class ManageIssBooks {
           JOptionPane.showMessageDialog(frm, "Input cannot be empty!");
         } else {
           try {
-            String delQry = ("DELETE FROM issuedBooks WHERE ib_id="+qIBID);
+            String delQry = ("DELETE FROM issuedBooks WHERE ib_id=" + qIBID);
 
             Statement pstmt = con.createStatement();
             pstmt.executeUpdate("USE library");
 
-            ResultSet rs = pstmt.executeQuery("SELECT returnDate FROM issuedBooks where ib_id="+qIBID);
+            ResultSet rs = pstmt.executeQuery("SELECT returnDate FROM issuedBooks where ib_id=" + qIBID);
 
             if (rs.next() == true) {
               String retDateValue = rs.getString("returnDate");
@@ -352,7 +354,8 @@ public class ManageIssBooks {
           }
         }
         ibidIn.setText("");
-        IssuedBooksTable.issTable.setModel(IssuedBooksTable.showIssBooksTable());
+        // refresh the table
+        IssuedBooksTable.issTable.setModel(manIssBook.setupTable());
       }
     });
     if (Utils.getTableRowNum("issuedBooks") == 0) {

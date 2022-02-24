@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.dlib.BooksTable;
+import com.dlib.TableOf;
 import com.dlib.Utils;
 
 import net.miginfocom.swing.MigLayout;
@@ -27,6 +28,7 @@ public class ManageBooks {
   private static JLabel bTitle, bAuthor, bGenre, bQuantity, bPubYear, BIDVal, BIDStatus, bookID;
   private static JTextField titleIn, authorIn, genreIn, quantityIn, pubYearIn, BIDIn;
   private static JButton addBook, validateBID, editBook, remBook;
+  private static TableOf manBook = new TableOf("books", BooksTable.col);
 
   // Add Book
   public static void addBook() {
@@ -87,7 +89,8 @@ public class ManageBooks {
         for (int i = 0; i < txtInputs.length; i++) {
           txtInputs[i].setText("");
         }
-        BooksTable.bookTable.setModel(BooksTable.showBooksTable());
+        // refresh the table
+        BooksTable.bookTable.setModel(manBook.setupTable());
       }
     });
 
@@ -206,7 +209,6 @@ public class ManageBooks {
         String qPubYear = pubYearIn.getText();
         String qBIDIn = BIDIn.getText();
 
-
         Connection con = Utils.connectToDB();
 
         try {
@@ -241,7 +243,8 @@ public class ManageBooks {
 
         editBook.setEnabled(false);
         BIDIn.setText("");
-        BooksTable.bookTable.setModel(BooksTable.showBooksTable());
+        // refresh the table
+        BooksTable.bookTable.setModel(manBook.setupTable());
       }
     });
 
@@ -314,7 +317,8 @@ public class ManageBooks {
           ex.printStackTrace();
         }
         BIDIn.setText("");
-        BooksTable.bookTable.setModel(BooksTable.showBooksTable());
+        // refresh the table
+        BooksTable.bookTable.setModel(manBook.setupTable());
       }
     });
 

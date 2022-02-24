@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.dlib.MembersTable;
+import com.dlib.TableOf;
 import com.dlib.Utils;
 
 import net.miginfocom.swing.MigLayout;
@@ -28,6 +29,7 @@ public class ManageMembers {
   private static JLabel fName, lName, address, contact, MIDVal, MIDStatus, memID;
 
   private static JButton addMember, validateMID, editMem, remMem;
+  private static TableOf manMem = new TableOf("members", MembersTable.col);
 
   // Add Member
   public static void addMember() {
@@ -82,7 +84,9 @@ public class ManageMembers {
         lNameIn.setText("");
         addressIn.setText("");
         contactIn.setText("");
-        MembersTable.memTable.setModel(MembersTable.showMembersTable());
+
+        // refresh table
+        MembersTable.memTable.setModel(manMem.setupTable());
       }
     });
 
@@ -226,7 +230,8 @@ public class ManageMembers {
 
         editMem.setEnabled(false);
         MIDIn.setText("");
-        MembersTable.memTable.setModel(MembersTable.showMembersTable());
+        // refresh table
+        MembersTable.memTable.setModel(manMem.setupTable());
       }
     });
 
@@ -297,7 +302,8 @@ public class ManageMembers {
           ex.printStackTrace();
         }
         MIDIn.setText("");
-        MembersTable.memTable.setModel(MembersTable.showMembersTable());
+        // refresh table
+        MembersTable.memTable.setModel(manMem.setupTable());
       }
     });
 
