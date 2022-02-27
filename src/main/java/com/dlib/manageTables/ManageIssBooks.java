@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.dlib.BooksTable;
 import com.dlib.IssuedBooksTable;
 import com.dlib.TableOf;
 import com.dlib.Utils;
@@ -29,6 +31,7 @@ public class ManageIssBooks {
   private static JLabel ibIBID, ibMID, ibBID, ibLName, ibBTitle, ibBrwDate, ibDuration, ibRetDate, issueStatus;
   private static JTextField ibidIn, midIn, bidIn, lNameIn, bTitleIn, brwDateIn, durationIn, retDateIn;
   private static JButton retBook, issBook, validateIBID, remIssBook;
+  private static TableOf manBook = new TableOf("books", BooksTable.col);
   private static TableOf manIssBook = new TableOf("issuedBooks", IssuedBooksTable.col);
 
   public static void issueBook() {
@@ -74,6 +77,7 @@ public class ManageIssBooks {
 
           if ((midExists && bidExists) == true) {
 
+            // TODO: refactor?
             String qry1 = "INSERT INTO issuedBooks(m_id,b_id,brwrLName,bookTitle,issuedDate,borrowPeriod,returnDate,overdued)";
             String qry2a = ("(SELECT m_id FROM members WHERE m_id=" + sqMID + ")");
             String qry2b = ("(SELECT b_id FROM books WHERE b_id=" + sqBID + ")");
@@ -124,6 +128,7 @@ public class ManageIssBooks {
           txtFields[i].setText("");
         }
         // refresh the table
+        BooksTable.bookTable.setModel(manBook.setupTable());
         IssuedBooksTable.issTable.setModel(manIssBook.setupTable());
       }
     });
@@ -187,6 +192,10 @@ public class ManageIssBooks {
 
         Connection con = Utils.connectToDB();
 
+        ArrayList<String> issBookCol = Utils.getTableColName("issuedBooks");
+        issBookCol.remove(0);
+        issBookCol.remove(issBookCol.size() - 1);
+
         String qIBID = ibidIn.getText();
 
         if (qIBID == null || qIBID.trim().equals("")) {
@@ -209,13 +218,16 @@ public class ManageIssBooks {
               ResultSet rs = pstmt.executeQuery(getIBIDValues);
               while (rs.next()) {
                 for (int i = 0; i < txtInputs.length; i++) {
-                  txtInputs[0].setText(rs.getString("m_id"));
-                  txtInputs[1].setText(rs.getString("b_id"));
-                  txtInputs[2].setText(rs.getString("brwrLName"));
-                  txtInputs[3].setText(rs.getString("bookTitle"));
-                  txtInputs[4].setText(rs.getString("issuedDate"));
-                  txtInputs[5].setText((String) rs.getString("borrowPeriod"));
-                  txtInputs[6].setText(dateToday);
+                  txtInputs[i].setText(rs.getString(issBookCol.get(i)));
+                  txtInputs[txtInputs.length - 1].setText(dateToday);
+
+                  // txtInputs[0].setText(rs.getString("m_id"));
+                  // txtInputs[1].setText(rs.getString("b_id"));
+                  // txtInputs[2].setText(rs.getString("brwrLName"));
+                  // txtInputs[3].setText(rs.getString("bookTitle"));
+                  // txtInputs[4].setText(rs.getString("issuedDate"));
+                  // txtInputs[5].setText(rs.getString("borrowPeriod"));
+
                   txtInputs[i].setEditable(false);
                 }
               }
@@ -269,6 +281,7 @@ public class ManageIssBooks {
         }
 
         // refresh the table
+        BooksTable.bookTable.setModel(manBook.setupTable());
         IssuedBooksTable.issTable.setModel(manIssBook.setupTable());
       }
     });
