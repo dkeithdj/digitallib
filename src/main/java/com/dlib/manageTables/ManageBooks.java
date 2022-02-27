@@ -2,15 +2,12 @@ package com.dlib.manageTables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -20,15 +17,19 @@ import com.dlib.Utils;
 
 import net.miginfocom.swing.MigLayout;
 
+// TODO: Refactor stuff
 public class ManageBooks {
 
   private static JPanel pnl;
   private static JFrame frm;
 
-  private static JLabel bTitle, bAuthor, bGenre, bQuantity, bPubYear, BIDVal, BIDStatus, bookID;
-  private static JTextField titleIn, authorIn, genreIn, quantityIn, pubYearIn, BIDIn;
-  private static JButton addBook, validateBID, editBook, remBook;
+  private static JLabel bTitle, bAuthor, bGenre, bQuantity, bIssued, bPubYear, BIDVal, bookStatus, bookID;
+  private static JTextField titleIn, authorIn, genreIn, quantityIn, issuedIn, pubYearIn;
+  private static JButton addBook, editBook, remBook;
+  private static JComboBox<String> BIDInPick;
   private static TableOf manBook = new TableOf("books", BooksTable.col);
+  private static ArrayList<JTextField> jtIns;
+  private static ArrayList<String> l;
 
   // Add Book
   public static void addBook() {
@@ -45,50 +46,48 @@ public class ManageBooks {
     genreIn = new JTextField("", 15);
     bQuantity = new JLabel("Quantity: ");
     quantityIn = new JTextField("", 15);
+    bIssued = new JLabel("Issued: ");
+    issuedIn = new JTextField("0", 15);
+    issuedIn.setEditable(false);
     bPubYear = new JLabel("Publish Year: ");
     pubYearIn = new JTextField("", 15);
-
-    final JTextField[] txtInputs = { titleIn, authorIn, genreIn, quantityIn, pubYearIn };
+    bookStatus = new JLabel("Status: ");
 
     addBook = new JButton("Add Book!");
     addBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String qTitle = titleIn.getText();
-        String qAuthor = authorIn.getText();
-        String qGenre = genreIn.getText();
-        String qQuantity = quantityIn.getText();
-        String qPubYear = pubYearIn.getText();
+        jtIns = new ArrayList<JTextField>();
+        jtIns.add(titleIn);
+        jtIns.add(authorIn);
+        jtIns.add(genreIn);
+        jtIns.add(quantityIn);
+        jtIns.add(issuedIn);
+        jtIns.add(pubYearIn);
 
-        Connection con = Utils.connectToDB();
+        ArrayList<String> bookCol = Utils.getTableColName("books");
+        bookCol.remove(0);
 
-        try {
-          if (qTitle.trim().equals("") || qAuthor.trim().equals("") || qGenre.trim().equals("")
-              || qQuantity.trim().equals("") || qPubYear.trim().equals("")) {
-            JOptionPane.showMessageDialog(frm, "There's an empty field!");
-          } else {
+        ArrayList<String> jtTxt = new ArrayList<String>();
 
-            String addQRY = "INSERT INTO books(title,author,genre,quantity,issued,publishYear) VALUES(?,?,?,?,?,?)";
-            PreparedStatement pstmt = con.prepareStatement(addQRY);
-            pstmt.executeUpdate("USE library");
+        for (int i = 0; i < jtIns.size(); i++) {
+          jtTxt.add(jtIns.get(i).getText());
+        }
 
-            pstmt.setString(1, qTitle);
-            pstmt.setString(2, qAuthor);
-            pstmt.setString(3, qGenre);
-            pstmt.setInt(4, Integer.parseInt(qQuantity));
-            pstmt.setInt(5, 0);
-            pstmt.setInt(6, Integer.parseInt(qPubYear));
+        boolean cor = manBook.setEdits(jtTxt, bookCol, "insert");
+        // boolean cor = manBook.setModTable(jtIns, bookCol);
 
-            pstmt.executeUpdate();
-            JOptionPane.showMessageDialog(frm, "Book Added!");
+        if (cor) {
+          // removes issuedIn
+          jtIns.remove(4);
+          for (int i = 0; i < jtIns.size(); i++) {
+            jtIns.get(i).setText("");
           }
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(frm, "Unable to add book, try again");
-          ex.printStackTrace();
+          bookStatus.setText("<html>Status: <font color=green>Success</html>");
+        } else {
+          bookStatus.setText("<html>Status: <font color=red>Check input fields</html>");
         }
-        for (int i = 0; i < txtInputs.length; i++) {
-          txtInputs[i].setText("");
-        }
+
         // refresh the table
         BooksTable.bookTable.setModel(manBook.setupTable());
       }
@@ -102,8 +101,11 @@ public class ManageBooks {
     pnl.add(genreIn);
     pnl.add(bQuantity);
     pnl.add(quantityIn);
+    pnl.add(bIssued);
+    pnl.add(issuedIn);
     pnl.add(bPubYear);
     pnl.add(pubYearIn);
+    pnl.add(bookStatus, "span");
     pnl.add(addBook, "skip, split, right");
 
     frm.add(pnl);
@@ -119,11 +121,14 @@ public class ManageBooks {
 
     frm = new JFrame("Edit Book");
     pnl = new JPanel();
-    pnl.setLayout(new MigLayout("wrap", "[][]", ""));
+    pnl.setLayout(new MigLayout("debug, wrap", "[][]", ""));
 
     BIDVal = new JLabel("Book ID(BID): ");
-    BIDIn = new JTextField("", 15);
-    BIDStatus = new JLabel("Status: ");
+    ArrayList<String> l = manBook.getTableIDs();
+    BIDInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
+    BIDInPick.setEditable(true);
+
+    bookStatus = new JLabel("Status: ");
     bTitle = new JLabel("Title: ");
     titleIn = new JTextField("", 15);
     bAuthor = new JLabel("Author: ");
@@ -135,66 +140,48 @@ public class ManageBooks {
     bPubYear = new JLabel("Publish Year: ");
     pubYearIn = new JTextField("", 15);
 
-    validateBID = new JButton("Check");
+    // validateBID = new JButton("Check");
     editBook = new JButton("Edit Book!");
 
-    final JTextField[] txtInputs = { titleIn, authorIn, genreIn, quantityIn, pubYearIn };
+    jtIns = new ArrayList<JTextField>();
+    jtIns.add(titleIn);
+    jtIns.add(authorIn);
+    jtIns.add(genreIn);
+    jtIns.add(quantityIn);
+    jtIns.add(pubYearIn);
 
-    for (int i = 0; i < txtInputs.length; i++) {
-      txtInputs[i].setText("");
-      txtInputs[i].setEnabled(false);
+    for (int i = 0; i < jtIns.size(); i++) {
+      jtIns.get(i).setText("");
+      jtIns.get(i).setEnabled(false);
       editBook.setEnabled(false);
     }
 
-    validateBID.addActionListener(new ActionListener() {
+    // TODO: get inputs
+    // qBID,bookCol
+    BIDInPick.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        Connection con = Utils.connectToDB();
+        String qBID = (String) BIDInPick.getSelectedItem();
 
-        String qBID = BIDIn.getText();
+        ArrayList<String> bookCol = Utils.getTableColName("books");
+        bookCol.remove(0);
+        bookCol.remove(4);
 
-        try {
-          if (qBID == null || qBID.trim().equals("")) {
-            for (int i = 0; i < txtInputs.length; i++) {
-              txtInputs[i].setEnabled(false);
-              txtInputs[i].setText("");
-            }
-            BIDStatus.setText("Status: Invalid");
-          } else {
-            String getBID = ("SELECT b_id FROM books WHERE b_id=" + qBID);
-            String getBIDValues = ("SELECT * FROM books WHERE b_id=" + qBID);
-            Statement pstmt = con.createStatement();
-            pstmt.executeUpdate("USE library");
+        boolean out = manBook.setEdits(bookCol, qBID, "select");
 
-            ResultSet rs = pstmt.executeQuery(getBID);
-
-            if (rs.next() == true) {
-              rs = pstmt.executeQuery(getBIDValues);
-              while (rs.next()) {
-                for (int i = 0; i < txtInputs.length; i++) {
-                  txtInputs[0].setText(rs.getString("title"));
-                  txtInputs[1].setText(rs.getString("author"));
-                  txtInputs[2].setText(rs.getString("genre"));
-                  txtInputs[3].setText((String) rs.getString("quantity"));
-                  txtInputs[4].setText(rs.getString("publishYear"));
-                  txtInputs[i].setEnabled(true);
-                }
-              }
-              BIDStatus.setText("Status: BID Exists");
-              editBook.setEnabled(true);
-            } else {
-              for (int i = 0; i < txtInputs.length; i++) {
-                txtInputs[i].setEnabled(false);
-                txtInputs[i].setText("");
-              }
-              editBook.setEnabled(false);
-              BIDIn.setText("");
-              BIDStatus.setText("Status: BID not found");
-            }
+        editBook.setEnabled(out);
+        if (out) {
+          for (int i = 0; i < jtIns.size(); i++) {
+            jtIns.get(i).setText((manBook.getOutput().get(i)));
+            jtIns.get(i).setEnabled(true);
           }
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(frm, "Input must be a number");
-          ex.printStackTrace();
+          bookStatus.setText("<html>Status: <font color=green>Success</html>");
+        } else {
+          for (int i = 0; i < jtIns.size(); i++) {
+            jtIns.get(i).setEditable(false);
+            jtIns.get(i).setText("");
+          }
+          bookStatus.setText("<html>Status: <font color=red>Invalid</html>");
         }
       }
     });
@@ -202,63 +189,42 @@ public class ManageBooks {
     editBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String qTitle = titleIn.getText();
-        String qAuthor = authorIn.getText();
-        String qGenre = genreIn.getText();
-        String qQuantity = quantityIn.getText();
-        String qPubYear = pubYearIn.getText();
-        String qBIDIn = BIDIn.getText();
+        ArrayList<String> bookCol = Utils.getTableColName("books");
+        bookCol.remove(0);
+        bookCol.remove(4);
 
-        Connection con = Utils.connectToDB();
-
-        try {
-
-          if (qTitle.trim().equals("") || qAuthor.trim().equals("") || qGenre.trim().equals("")
-              || qQuantity.trim().equals("") || qPubYear.trim().equals("")) {
-            JOptionPane.showMessageDialog(frm, "There's an empty field!");
-          } else {
-
-            String addQRY = "UPDATE books SET title=?, author=?, genre=?, quantity=?, publishYear=? WHERE b_id=?";
-            PreparedStatement pstmt = con.prepareStatement(addQRY);
-            pstmt.executeUpdate("USE library");
-
-            pstmt.setString(1, qTitle);
-            pstmt.setString(2, qAuthor);
-            pstmt.setString(3, qGenre);
-            pstmt.setInt(4, Integer.parseInt(qQuantity));
-            pstmt.setString(5, qPubYear);
-            pstmt.setInt(6, Integer.parseInt(qBIDIn));
-
-            pstmt.executeUpdate();
-            JOptionPane.showMessageDialog(frm, "Book Edited!");
-          }
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(frm, "Unable to edit book, try again");
-          ex.printStackTrace();
-        }
-        for (int i = 0; i < txtInputs.length; i++) {
-          txtInputs[i].setEnabled(false);
-          txtInputs[i].setText("");
+        ArrayList<String> jtTxt = new ArrayList<String>();
+        for (int i = 0; i < jtIns.size(); i++) {
+          jtTxt.add(jtIns.get(i).getText());
         }
 
-        editBook.setEnabled(false);
-        BIDIn.setText("");
+        boolean out = manBook.setModTable(jtIns, bookCol, "update");
+
+        editBook.setEnabled(out);
+        if (out) {
+          bookStatus.setText("<html>Status: <font color=green>Success</html>");
+        } else {
+          bookStatus.setText("<html>Status: <font color=red>Check input fields</html>");
+        }
+
+        for (int i = 0; i < jtIns.size(); i++) {
+          jtIns.get(i).setEnabled(false);
+          jtIns.get(i).setText("");
+        }
+
         // refresh the table
         BooksTable.bookTable.setModel(manBook.setupTable());
       }
     });
 
     if (Utils.getTableRowNum("books") == 0) {
-      BIDIn.setEnabled(false);
-      validateBID.setEnabled(false);
       editBook.setEnabled(false);
-      BIDStatus.setText("Status: No Books");
+      bookStatus.setText("Status: No Books");
     }
 
     pnl.add(BIDVal);
-    pnl.add(BIDIn);
-    pnl.add(BIDStatus);
-    pnl.add(validateBID, "split, right, wrap");
+    pnl.add(BIDInPick, "grow, right");
+    pnl.add(bookStatus, "span, wrap");
     pnl.add(bTitle);
     pnl.add(titleIn);
     pnl.add(bAuthor);
@@ -286,49 +252,40 @@ public class ManageBooks {
     pnl.setLayout(new MigLayout("wrap", "[][]", ""));
 
     bookID = new JLabel("Book ID(BID): ");
-    BIDIn = new JTextField("", 15);
+    l = manBook.getTableIDs();
+    BIDInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
+    BIDInPick.setEditable(true);
+    bookStatus = new JLabel("Status: ");
 
     remBook = new JButton("Remove Book!");
     remBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String qBID = BIDIn.getText();
+        String qBID = (String) BIDInPick.getSelectedItem();
 
-        Connection con = Utils.connectToDB();
+        ArrayList<String> bookCol = Utils.getTableColName("members");
+        bookCol.remove(0);
 
-        try {
-          if (qBID == null || qBID.trim().equals("")) {
-            JOptionPane.showMessageDialog(frm, "Input cannot be empty!");
-          } else {
-            String addQRY = "DELETE FROM books WHERE b_id=?";
-            PreparedStatement pstmt = con.prepareStatement(addQRY);
-            pstmt.executeUpdate("USE library");
+        boolean out = manBook.setEdits(bookCol, qBID, "delete");
 
-            pstmt.setString(1, qBID);
-
-            if (pstmt.executeUpdate() > 0) {
-              JOptionPane.showMessageDialog(frm, "Book Removed!");
-            } else {
-              JOptionPane.showMessageDialog(frm, "BID doesn't exist");
-            }
-          }
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(frm, "Unable to remove book, try again");
-          ex.printStackTrace();
+        if (out) {
+          bookStatus.setText("<html>Status: <font color=green>Success</html>");
+        } else {
+          bookStatus.setText("<html>Status: <font color=red>Unable to remove</html>");
         }
-        BIDIn.setText("");
+
         // refresh the table
         BooksTable.bookTable.setModel(manBook.setupTable());
       }
     });
 
     if (Utils.getTableRowNum("books") == 0) {
-      BIDIn.setEnabled(false);
       remBook.setEnabled(false);
-      BIDIn.setText("Nothing to Remove");
+      bookStatus.setText("Status: No books");
     }
     pnl.add(bookID);
-    pnl.add(BIDIn);
+    pnl.add(BIDInPick, "grow");
+    pnl.add(bookStatus, "span");
     pnl.add(remBook, "skip, split, right");
 
     frm.add(pnl);

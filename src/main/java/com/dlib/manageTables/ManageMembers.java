@@ -2,15 +2,12 @@ package com.dlib.manageTables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -25,18 +22,21 @@ public class ManageMembers {
   private static JPanel pnl;
   private static JFrame frm;
 
-  private static JTextField fNameIn, lNameIn, addressIn, contactIn, MIDIn;
-  private static JLabel fName, lName, address, contact, MIDVal, MIDStatus, memID;
+  private static JTextField fNameIn, lNameIn, addressIn, contactIn;
+  private static JLabel fName, lName, address, contact, MIDVal, memStatus, memID;
+  private static JComboBox<String> MIDInPick;
 
-  private static JButton addMember, validateMID, editMem, remMem;
+  private static JButton addMember, editMem, remMem;
   private static TableOf manMem = new TableOf("members", MembersTable.col);
+  private static ArrayList<String> l;
+  private static ArrayList<JTextField> jtIns;
 
   // Add Member
   public static void addMember() {
 
     frm = new JFrame("Add Member");
     pnl = new JPanel();
-    pnl.setLayout(new MigLayout("wrap", "[][]", ""));
+    pnl.setLayout(new MigLayout("debug, wrap", "[][]", ""));
 
     fName = new JLabel("First Name: ");
     fNameIn = new JTextField("", 15);
@@ -46,44 +46,36 @@ public class ManageMembers {
     addressIn = new JTextField("", 15);
     contact = new JLabel("Contact Number: ");
     contactIn = new JTextField("", 15);
+    memStatus = new JLabel("Status: ");
 
     addMember = new JButton("Add Member!");
     addMember.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        jtIns = new ArrayList<JTextField>();
+        jtIns.add(fNameIn);
+        jtIns.add(lNameIn);
+        jtIns.add(addressIn);
+        jtIns.add(contactIn);
 
-        String qfName = fNameIn.getText();
-        String qlName = lNameIn.getText();
-        String qAddress = addressIn.getText();
-        String qContact = contactIn.getText();
+        ArrayList<String> memCol = Utils.getTableColName("members");
+        memCol.remove(0);
 
-        Connection con = Utils.connectToDB();
-
-        try {
-          if (qfName.trim().equals("") || qlName.trim().equals("") || qAddress.trim().equals("")
-              || qContact.trim().equals("")) {
-            JOptionPane.showMessageDialog(frm, "There's an empty field!");
-          } else {
-
-            String addQRY = "INSERT INTO members(firstName,lastName,address,contact) VALUES(?,?,?,?)";
-            PreparedStatement pstmt = con.prepareStatement(addQRY);
-            pstmt.executeUpdate("USE library");
-
-            pstmt.setString(1, qfName);
-            pstmt.setString(2, qlName);
-            pstmt.setString(3, qAddress);
-            pstmt.setString(4, qContact);
-
-            pstmt.executeUpdate();
-            JOptionPane.showMessageDialog(frm, "Member Added!");
-          }
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(frm, "Unable to add member, try again");
-          ex.printStackTrace();
+        ArrayList<String> jtTxt = new ArrayList<String>();
+        for (int i = 0; i < jtIns.size(); i++) {
+          jtTxt.add(jtIns.get(i).getText());
         }
-        fNameIn.setText("");
-        lNameIn.setText("");
-        addressIn.setText("");
-        contactIn.setText("");
+
+        // boolean cor = manMem.setModTable(jtIns, memCol);
+        boolean cor = manMem.setEdits(jtTxt, memCol, "insert");
+
+        if (cor) {
+          for (int i = 0; i < jtIns.size(); i++) {
+            jtIns.get(i).setText("");
+          }
+          memStatus.setText("<html>Status: <font color=green>Success</html>");
+        } else {
+          memStatus.setText("<html>Status: <font color=red>Check input fields</html>");
+        }
 
         // refresh table
         MembersTable.memTable.setModel(manMem.setupTable());
@@ -98,6 +90,7 @@ public class ManageMembers {
     pnl.add(addressIn);
     pnl.add(contact);
     pnl.add(contactIn);
+    pnl.add(memStatus, "span");
     pnl.add(addMember, "skip, split, right");
 
     frm.add(pnl);
@@ -112,11 +105,15 @@ public class ManageMembers {
 
     frm = new JFrame("Edit Member");
     pnl = new JPanel();
-    pnl.setLayout(new MigLayout("wrap", "[][]", ""));
+    pnl.setLayout(new MigLayout("debug,wrap", "[][]", ""));
 
     MIDVal = new JLabel("Member ID(MID): ");
-    MIDIn = new JTextField("", 15);
-    MIDStatus = new JLabel("Status: ");
+
+    l = manMem.getTableIDs();
+    MIDInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
+    MIDInPick.setEditable(true);
+
+    memStatus = new JLabel("Status: ");
     fName = new JLabel("First Name: ");
     fNameIn = new JTextField("", 15);
     lName = new JLabel("Last Name: ");
@@ -126,7 +123,6 @@ public class ManageMembers {
     contact = new JLabel("Contact Number: ");
     contactIn = new JTextField("", 15);
 
-    validateMID = new JButton("Check");
     editMem = new JButton("Edit Member!");
 
     final JTextField[] txtInputs = { fNameIn, lNameIn, addressIn, contactIn };
@@ -136,54 +132,38 @@ public class ManageMembers {
       txtInputs[i].setEnabled(false);
       editMem.setEnabled(false);
     }
-    validateMID.addActionListener(new ActionListener() {
+    MIDInPick.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        Connection con = Utils.connectToDB();
+        // changes
+        ArrayList<String> memCol = Utils.getTableColName("members");
+        memCol.remove(0);
 
-        String qMID = MIDIn.getText();
+        jtIns = new ArrayList<JTextField>();
+        jtIns.add(fNameIn);
+        jtIns.add(lNameIn);
+        jtIns.add(addressIn);
+        jtIns.add(contactIn);
 
-        try {
-          if (qMID == null || qMID.trim().equals("")) {
-            for (int i = 0; i < txtInputs.length; i++) {
-              txtInputs[i].setEnabled(false);
-              txtInputs[i].setText("");
-            }
-            MIDStatus.setText("Status: Invalid");
-          } else {
-            String getMID = ("SELECT m_id FROM members WHERE m_id=" + qMID);
-            String getMIDValues = ("SELECT * FROM members WHERE m_id=" + qMID);
-            Statement pstmt = con.createStatement();
-            pstmt.executeUpdate("USE library");
+        String qMID = (String) MIDInPick.getSelectedItem();
 
-            ResultSet rs = pstmt.executeQuery(getMID);
+        boolean out = manMem.setEdits(memCol, qMID, "select");
 
-            if (rs.next() == true) {
-              rs = pstmt.executeQuery(getMIDValues);
-              while (rs.next()) {
-                for (int i = 0; i < txtInputs.length; i++) {
-                  txtInputs[0].setText(rs.getString("firstName"));
-                  txtInputs[1].setText(rs.getString("lastName"));
-                  txtInputs[2].setText(rs.getString("address"));
-                  txtInputs[3].setText(rs.getString("contact"));
-                  txtInputs[i].setEnabled(true);
-                }
-              }
-              MIDStatus.setText("Status: MID Exists");
-              editMem.setEnabled(true);
-            } else {
-              for (int i = 0; i < txtInputs.length; i++) {
-                txtInputs[i].setEnabled(false);
-                txtInputs[i].setText("");
-              }
-              editMem.setEnabled(false);
-              MIDIn.setText("");
-              MIDStatus.setText("Status: MID not found");
-            }
+        editMem.setEnabled(out);
+        if (out) {
+          for (int i = 0; i < jtIns.size(); i++) {
+            jtIns.get(i).setText((manMem.getOutput().get(i)));
+            jtIns.get(i).setEnabled(true);
           }
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(frm, "Input must be a number");
-          ex.printStackTrace();
+
+          memStatus.setText("<html>Status: <font color=green>Success</html>");
+        } else {
+          for (int i = 0; i < jtIns.size(); i++) {
+            jtIns.get(i).setEditable(false);
+            jtIns.get(i).setText("");
+            editMem.setEnabled(false);
+          }
+          memStatus.setText("<html>Status: <font color=red>Invalid</html>");
         }
       }
     });
@@ -191,61 +171,46 @@ public class ManageMembers {
     editMem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String qfName = fNameIn.getText();
-        String qlName = lNameIn.getText();
-        String qAddress = addressIn.getText();
-        String qContact = contactIn.getText();
-        String qMID = MIDIn.getText();
+        ArrayList<String> memCol = Utils.getTableColName("members");
+        memCol.remove(0);
 
-        Connection con = Utils.connectToDB();
+        jtIns = new ArrayList<JTextField>();
+        jtIns.add(fNameIn);
+        jtIns.add(lNameIn);
+        jtIns.add(addressIn);
+        jtIns.add(contactIn);
 
-        try {
-
-          if (qfName.trim().equals("") || qlName.trim().equals("") || qAddress.trim().equals("")
-              || qContact.trim().equals("")) {
-            JOptionPane.showMessageDialog(frm, "There's an empty field!");
-          } else {
-
-            String addQRY = "UPDATE members SET firstName=?, lastName=?, address=?,contact=? WHERE m_id=?";
-            PreparedStatement pstmt = con.prepareStatement(addQRY);
-            pstmt.executeUpdate("USE library");
-
-            pstmt.setString(1, qfName);
-            pstmt.setString(2, qlName);
-            pstmt.setString(3, qAddress);
-            pstmt.setString(4, qContact);
-            pstmt.setString(5, qMID);
-
-            pstmt.executeUpdate();
-            JOptionPane.showMessageDialog(frm, "Member Edited!");
-          }
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(frm, "Unable to edit member, try again");
-          ex.printStackTrace();
-        }
-        for (int i = 0; i < txtInputs.length; i++) {
-          txtInputs[i].setEnabled(false);
-          txtInputs[i].setText("");
+        ArrayList<String> jtTxt = new ArrayList<String>();
+        for (int i = 0; i < jtIns.size(); i++) {
+          jtTxt.add(jtIns.get(i).getText());
         }
 
-        editMem.setEnabled(false);
-        MIDIn.setText("");
+        boolean cor = manMem.setEdits(jtTxt, memCol, "update");
+
+        if (cor) {
+          memStatus.setText("<html>Status: <font color=green>Success</html>");
+        } else {
+          memStatus.setText("<html>Status: <font color=red>Check input fields</html>");
+        }
+
+        for (int i = 0; i < jtIns.size(); i++) {
+          jtIns.get(i).setEnabled(false);
+          jtIns.get(i).setText("");
+        }
+
         // refresh table
         MembersTable.memTable.setModel(manMem.setupTable());
       }
     });
 
     if (Utils.getTableRowNum("members") == 0) {
-      MIDIn.setEnabled(false);
-      validateMID.setEnabled(false);
       editMem.setEnabled(false);
-      MIDStatus.setText("Status: No Members");
+      memStatus.setText("Status: No Members");
     }
 
     pnl.add(MIDVal);
-    pnl.add(MIDIn);
-    pnl.add(MIDStatus);
-    pnl.add(validateMID, "split, right, wrap");
+    pnl.add(MIDInPick, "grow, right");
+    pnl.add(memStatus, "span");
     pnl.add(fName);
     pnl.add(fNameIn);
     pnl.add(lName);
@@ -271,50 +236,41 @@ public class ManageMembers {
     pnl.setLayout(new MigLayout("wrap", "[][]", ""));
 
     memID = new JLabel("Member ID(MID): ");
-    MIDIn = new JTextField("", 15);
+    l = manMem.getTableIDs();
+    MIDInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
+    MIDInPick.setEditable(true);
+    memStatus = new JLabel("Status: ");
 
     remMem = new JButton("Remove Member!");
     remMem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String qMID = MIDIn.getText();
+        String qMID = (String) MIDInPick.getSelectedItem();
 
-        Connection con = Utils.connectToDB();
+        ArrayList<String> memCol = Utils.getTableColName("members");
+        memCol.remove(0);
 
-        try {
-          if (qMID == null || qMID.trim().equals("")) {
-            JOptionPane.showMessageDialog(frm, "Input cannot be empty!");
-          } else {
-            String addQRY = "DELETE FROM members WHERE m_id=?";
-            PreparedStatement pstmt = con.prepareStatement(addQRY);
-            pstmt.executeUpdate("USE library");
+        boolean out = manMem.setEdits(memCol, qMID, "delete");
 
-            pstmt.setString(1, qMID);
-
-            if (pstmt.executeUpdate() > 0) {
-              JOptionPane.showMessageDialog(frm, "Member Removed!");
-            } else {
-              JOptionPane.showMessageDialog(frm, "MID doesn't exist");
-            }
-          }
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(frm, "Unable to remove member, try again");
-          ex.printStackTrace();
+        if (out) {
+          memStatus.setText("<html>Status: <font color=green>Success</html>");
+        } else {
+          memStatus.setText("<html>Status: <font color=red>Unable to remove</html>");
         }
-        MIDIn.setText("");
+
         // refresh table
         MembersTable.memTable.setModel(manMem.setupTable());
       }
     });
 
     if (Utils.getTableRowNum("members") == 0) {
-      MIDIn.setEnabled(false);
       remMem.setEnabled(false);
-      MIDIn.setText("Nothing to Remove");
+      memStatus.setText("Status: No members");
     }
 
     pnl.add(memID);
-    pnl.add(MIDIn);
+    pnl.add(MIDInPick, "grow");
+    pnl.add(memStatus, "span");
     pnl.add(remMem, "skip, split, right");
 
     frm.add(pnl);
