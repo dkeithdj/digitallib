@@ -15,6 +15,31 @@ import javax.swing.JOptionPane;
 
 public class Utils {
 
+  // generally, the process of interacting with the database are as follows:
+
+  // Connection con=Utils.connectToDB(); <-- this initializes a connection to the
+  // database
+
+  // Statement is to create a statement shown below
+  // Statement stmt = con.createStatement();
+
+  // executeUpdate gets a string that commands the database to either select,
+  // insert, delete as well as other commands (SQL - Structured Query Language)
+  // NOTE: capitalization is just for readability
+  // stmt.executeUpdate("USE library"); <-- can be "SELECT m_id from members" or
+  // "INSERT INTO firstName='Raiden' WHERE m_id=3"
+
+  // ResultSet fetches the data from the database to be used in the code
+  // ResultSet rs = stmt.executeQuery("select count(*) from " +
+  // tableName);
+
+  // rs.next();
+
+  // usually SELECT commands gets a result from the database
+  // whereas INSERT and DELETE sets the database based on your inputs
+  // SELECT --> in
+  // INSERT, DELETE --> out
+
   private static Connection con;
 
   // Initializes connection to MySQL
@@ -36,9 +61,9 @@ public class Utils {
 
   // Function that gets the number of rows in the table
   public static int getTableRowNum(String tableName) {
-    con = Utils.connectToDB();
 
     try {
+      con = Utils.connectToDB();
       Statement stmt = con.createStatement();
       stmt.executeUpdate("USE library");
       ResultSet rs = stmt.executeQuery("select count(*) from " + tableName);
@@ -60,7 +85,7 @@ public class Utils {
       Statement stmt = con.createStatement();
       stmt.executeUpdate("USE library");
 
-      ResultSet rs = stmt.executeQuery("select * from " + tableName);
+      ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName);
       ResultSetMetaData mtd = rs.getMetaData();
 
       colCount = mtd.getColumnCount();
@@ -116,6 +141,7 @@ public class Utils {
     return status;
   }
 
+  // TODO: might migrate this from other classes
   // updates data of issued books
   public static void IBUpdate(String sqBID, String sqIBID, String dateToday, JFrame frm) {
 
