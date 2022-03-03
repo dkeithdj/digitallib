@@ -114,13 +114,13 @@ public class Utils {
         String DBName = rSet.getString(1);
         if (DBName.equals("library")) {
           hasDB = true;
-          return hasDB;
         }
       }
+      return hasDB;
     } catch (Exception e) {
       e.printStackTrace();
+      return hasDB;
     }
-    return hasDB;
   }
 
   // checks if a specific id inside a database table exists

@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 public class InitDB {
 
-  public static void initializeDB() {
+  public static boolean initializeDB() {
     try {
       Connection con = Utils.connectToDB();
 
@@ -40,14 +40,21 @@ public class InitDB {
         inStmt.executeUpdate(listQry[i]);
       }
       rSet.close();
+      return true;
     } catch (Exception ex) {
       ex.printStackTrace();
+      return false;
     }
   }
 
   public static void redirectToAdPage() {
-    InitDB.initializeDB();
-    AdminMenu.adminPage();
+    try {
+      if (initializeDB()) {
+        AdminMenu.adminPage();
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
 }
