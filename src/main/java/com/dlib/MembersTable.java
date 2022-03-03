@@ -14,22 +14,30 @@ import net.miginfocom.swing.MigLayout;
 
 public class MembersTable {
 
-  public static JTable memTable;
-  // private static String tableName = "members";
+  // private String tableName = "members";
   private static JPanel panel;
 
   public static String[] col = { "MID", "FIRST NAME", "LAST NAME", "ADDRESS", "CONTACT" };
-  // public static String[] headers = { "m_id", "firstName", "lastName",
+  // public String[] headers = { "m_id", "firstName", "lastName",
   // "address", "contact" };
 
   private static JScrollPane pane;
   private static JButton addMember, editMember, remMember;
 
+  private static TableOf memTbl = new TableOf("members", col);
+  public static JTable memTable = memTbl.getTable();
+
+  private static ManageMembers manMem = new ManageMembers();
+
+  // can add this in a superclass
+  public TableOf getTableData() {
+    return memTbl;
+  }
+
   public static JPanel membersTable() {
 
-    TableOf bTbl = new TableOf("members", col);
-
-    memTable = bTbl.getTable();
+    manMem.setMemTable(memTable);
+    // memTable = memTbl.getTable();
 
     // Gui layout starts here
     pane = new JScrollPane(memTable);
@@ -38,19 +46,19 @@ public class MembersTable {
     addMember = new JButton("Add");
     addMember.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        ManageMembers.addMember();
+        manMem.addMember();
       }
     });
     editMember = new JButton("Edit");
     editMember.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        ManageMembers.editMember();
+        manMem.editMember();
       }
     });
     remMember = new JButton("Remove");
     remMember.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        ManageMembers.removeMember();
+        manMem.removeMember();
       }
     });
 
@@ -62,45 +70,5 @@ public class MembersTable {
 
     return panel;
   }
-
-  // public static DefaultTableModel showMembersTable() {
-
-  // String col[] = { "MID", "FIRST NAME", "LAST NAME", "ADDRESS", "CONTACT" };
-  // String data[][] = new String[Utils.getTableRowNum(tableName)][col.length];
-
-  // Connection con = Utils.connectToDB();
-  // try {
-  // Statement stmt = con.createStatement();
-  // stmt.executeUpdate("USE library");
-  // ResultSet rs = stmt.executeQuery("select * from " + tableName);
-
-  // int i = 0;
-  // while (rs.next()) {
-  // int mid = rs.getInt("m_id");
-  // String firstName = rs.getString("firstName");
-  // String lastName = rs.getString("lastName");
-  // String address = rs.getString("address");
-  // String contact = rs.getString("contact");
-
-  // String details[] = { Integer.toString(mid), firstName, lastName, address,
-  // contact };
-
-  // for (int x = 0; x < details.length; x++) {
-  // data[i][x] = details[x];
-  // }
-  // i++;
-  // }
-  // DefaultTableModel model = new DefaultTableModel(data, col) {
-  // @Override
-  // public boolean isCellEditable(int row, int column) {
-  // return false;
-  // }
-  // };
-  // return model;
-  // } catch (Exception ex) {
-  // System.out.println(ex);
-  // }
-  // return null;
-  // }
 
 }

@@ -14,8 +14,6 @@ import net.miginfocom.swing.MigLayout;
 
 public class BooksTable {
 
-  public static JTable bookTable;
-
   public static String[] col = { "BID", "TITLE", "AUTHOR", "GENRE", "QUANTITY", "ISSUED", "PUBLISH YEAR" };
   // public static String[] headers = { "b_id", "title", "author", "genre",
   // "quantity", "issued", "publishYear" };
@@ -24,31 +22,43 @@ public class BooksTable {
   private static JScrollPane pane;
   private static JButton addBook, editBook, remBook;
 
+  private static TableOf bookTbl = new TableOf("books", col);
+  public static JTable bookTable = bookTbl.getTable();
+
+  private static ManageBooks manBooks = new ManageBooks();
+
+  // can add this in a superclass
+  public TableOf getTableData() {
+    return bookTbl;
+  }
+
   public static JPanel booksTable() {
 
-    TableOf bTbl = new TableOf("books", col);
-    bookTable = bTbl.getTable();
+    // bookTbl = new TableOf("books", col);
+    // bookTable = bookTbl.getTable();
+    manBooks.setBookTable(bookTable);
 
     // Gui layout starts here
     pane = new JScrollPane(bookTable);
 
     panel = new JPanel();
+
     addBook = new JButton("Add");
     addBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        ManageBooks.addBook();
+        manBooks.addBook();
       }
     });
     editBook = new JButton("Edit");
     editBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        ManageBooks.editBook();
+        manBooks.editBook();
       }
     });
     remBook = new JButton("Remove");
     remBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        ManageBooks.removeBook();
+        manBooks.removeBook();
       }
     });
 
@@ -61,43 +71,4 @@ public class BooksTable {
     return panel;
   }
 
-  // public static DefaultTableModel showBooksTable() {
-
-  // Connection con = Utils.connectToDB();
-
-  // try {
-  // Statement stmt = con.createStatement();
-  // stmt.executeUpdate("USE library");
-  // ResultSet rs = stmt.executeQuery("select * from " + tableName);
-
-  // String data[][] = new String[Utils.getTableRowNum(tableName)][col.length];
-
-  // // TODO: format to for-loop
-  // // temporary
-  // // String[] cols = { "b_id", "title", "author", "genre", "quantity",
-  // "issued",
-  // // "publishYear" };
-
-  // int i = 0;
-  // while (rs.next()) {
-  // for (int x = 0; x < headers.length; x++) {
-  // data[i][x] = rs.getString(headers[x]);
-  // }
-  // i++;
-  // }
-
-  // DefaultTableModel model = new DefaultTableModel(data, col) {
-  // @Override
-  // public boolean isCellEditable(int row, int column) {
-  // // all cells false
-  // return false;
-  // }
-  // };
-
-  // return model;
-  // } catch (Exception e) {
-  // System.out.println(e);
-  // }
-  // return null;
-  // }
 }

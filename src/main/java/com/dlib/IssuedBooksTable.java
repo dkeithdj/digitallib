@@ -26,12 +26,15 @@ public class IssuedBooksTable {
 
   public static JButton issueBook, returnBook, remIssBook;
 
+  private static ManageIssBooks manIssBooks = new ManageIssBooks();
+
   public static void issuedBooksTable() {
 
     frm = new JFrame("Issued Books");
 
     TableOf issBookTbl = new TableOf("issuedBooks", col);
     issTable = issBookTbl.getTable();
+    manIssBooks.setIssBookTable(issTable);
 
     // Gui layout starts here
     pane = new JScrollPane(issTable);
@@ -40,19 +43,20 @@ public class IssuedBooksTable {
     issueBook = new JButton("Issue Book");
     issueBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        ManageIssBooks.issueBook();
+        manIssBooks.issueBook();
       }
     });
     returnBook = new JButton("Return Book");
     returnBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        ManageIssBooks.returnBook();
+        manIssBooks.returnBook();
       }
     });
     remIssBook = new JButton("Remove Issued");
     remIssBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        ManageIssBooks.remIssBook();
+        manIssBooks.remIssBook();
+        // ManageIssBooks.remIssBook();
       }
     });
 
