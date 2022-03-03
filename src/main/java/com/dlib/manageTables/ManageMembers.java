@@ -9,6 +9,8 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import com.dlib.MembersTable;
@@ -19,20 +21,34 @@ import net.miginfocom.swing.MigLayout;
 
 public class ManageMembers {
 
-  private static JPanel pnl;
-  private static JFrame frm;
+  private JPanel pnl;
+  private JFrame frm;
 
-  private static JTextField fNameIn, lNameIn, addressIn, contactIn;
-  private static JLabel fName, lName, address, contact, MIDVal, memStatus, memID;
-  private static JComboBox<String> MIDInPick;
+  private JTextField fNameIn, lNameIn, addressIn, contactIn;
+  private JLabel fName, lName, address, contact, MIDVal, memStatus, memID;
+  private JComboBox<String> MIDInPick;
 
-  private static JButton addMember, editMem, remMem;
-  private static TableOf manMem = new TableOf("members", MembersTable.col);
-  private static ArrayList<String> l;
-  private static ArrayList<JTextField> jtIns;
+  private JButton addMember, editMem, remMem;
+  private MembersTable mTable = new MembersTable();
+  private TableOf manMem = mTable.getTableData();
+  private ArrayList<String> l;
+  private ArrayList<JTextField> jtIns;
+  // private JTable upMemTable = mTable.getTbl();
+  private JTable tbl;
+
+  private ArrayList<String> out;
+
+  public void setMemTable(JTable btbl) {
+    this.tbl = btbl;
+  }
+
+  // private void refTable() {
+  // mTable.getTbl().setModel(manMem.setupTable());
+  // System.out.println("refreshed");
+  // }
 
   // Add Member
-  public static void addMember() {
+  public void addMember() {
 
     frm = new JFrame("Add Member");
     pnl = new JPanel();
@@ -65,10 +81,9 @@ public class ManageMembers {
           jtTxt.add(jtIns.get(i).getText());
         }
 
-        // boolean cor = manMem.setModTable(jtIns, memCol);
-        boolean cor = manMem.setEdits(jtTxt, memCol, "insert");
+        out = manMem.setEdits(jtTxt, memCol, "insert");
 
-        if (cor) {
+        if (out != null) {
           for (int i = 0; i < jtIns.size(); i++) {
             jtIns.get(i).setText("");
           }
@@ -78,7 +93,12 @@ public class ManageMembers {
         }
 
         // refresh table
-        MembersTable.memTable.setModel(manMem.setupTable());
+        // new MembersTable().memTable.setModel(manMem.setupTable());
+        // manMem.getTable().setModel(manMem.setupTable());
+        tbl.setModel(manMem.setupTable());
+        // mTable.refreshTable();
+        // refTable();
+        // upMemTable.setModel(manMem.setupTable());
       }
     });
 
@@ -101,7 +121,7 @@ public class ManageMembers {
   }
 
   // Edit Member
-  public static void editMember() {
+  public void editMember() {
 
     frm = new JFrame("Edit Member");
     pnl = new JPanel();
@@ -125,6 +145,7 @@ public class ManageMembers {
 
     editMem = new JButton("Edit Member!");
 
+    // TODO: change this
     final JTextField[] txtInputs = { fNameIn, lNameIn, addressIn, contactIn };
 
     for (int i = 0; i < txtInputs.length; i++) {
@@ -147,12 +168,12 @@ public class ManageMembers {
 
         String qMID = (String) MIDInPick.getSelectedItem();
 
-        boolean out = manMem.setEdits(memCol, qMID, "select");
+        out = manMem.setEdits(memCol, qMID, "select");
 
-        editMem.setEnabled(out);
-        if (out) {
+        if (out != null) {
+          editMem.setEnabled(true);
           for (int i = 0; i < jtIns.size(); i++) {
-            jtIns.get(i).setText((manMem.getOutput().get(i)));
+            jtIns.get(i).setText((out.get(i)));
             jtIns.get(i).setEnabled(true);
           }
 
@@ -185,21 +206,28 @@ public class ManageMembers {
           jtTxt.add(jtIns.get(i).getText());
         }
 
-        boolean cor = manMem.setEdits(jtTxt, memCol, "update");
+        out = manMem.setEdits(jtTxt, memCol, "update");
 
-        if (cor) {
+        if (out != null) {
+          editMem.setEnabled(true);
           memStatus.setText("<html>Status: <font color=green>Success</html>");
         } else {
           memStatus.setText("<html>Status: <font color=red>Check input fields</html>");
         }
 
         for (int i = 0; i < jtIns.size(); i++) {
+          editMem.setEnabled(false);
           jtIns.get(i).setEnabled(false);
           jtIns.get(i).setText("");
         }
 
         // refresh table
-        MembersTable.memTable.setModel(manMem.setupTable());
+        // new MembersTable().memTable.setModel(manMem.setupTable());
+        // refTable();
+        // upMemTable.setModel(manMem.setupTable());
+        // refTable();
+        tbl.setModel(manMem.setupTable());
+        // mTable.refTbl().setModel(manMem.setupTable());
       }
     });
 
@@ -229,7 +257,7 @@ public class ManageMembers {
   }
 
   // Remove Member
-  public static void removeMember() {
+  public void removeMember() {
 
     frm = new JFrame("Remove Member");
     pnl = new JPanel();
@@ -250,16 +278,17 @@ public class ManageMembers {
         ArrayList<String> memCol = Utils.getTableColName("members");
         memCol.remove(0);
 
-        boolean out = manMem.setEdits(memCol, qMID, "delete");
+        out = manMem.setEdits(memCol, qMID, "delete");
 
-        if (out) {
+        if (out != null) {
           memStatus.setText("<html>Status: <font color=green>Success</html>");
         } else {
           memStatus.setText("<html>Status: <font color=red>Unable to remove</html>");
         }
 
         // refresh table
-        MembersTable.memTable.setModel(manMem.setupTable());
+        // MembersTable.memTable.setModel(manMem.setupTable());
+        tbl.setModel(manMem.setupTable());
       }
     });
 
