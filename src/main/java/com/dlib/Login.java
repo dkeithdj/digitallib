@@ -24,8 +24,8 @@ public class Login {
 
   private static JFrame frm;
 
-  private static String adminUName = "admin";
-  private static String adminPass = "admin";
+  private static final String adminUName = "admin";
+  private static final String adminPass = "admin";
 
   public static void login() {
 
@@ -50,13 +50,11 @@ public class Login {
 
         if (accName.equals("") || accPass.equals("")) {
           JOptionPane.showMessageDialog(null, "Name or password should not be empty!");
-        } 
-        else {
+        } else {
           if (accName.equals(adminUName) && accPass.equals(adminPass)) {
             frm.dispose();
             AdminMenu.adminPage();
-          }
-          else {
+          } else {
             JOptionPane.showMessageDialog(null, "Incorrect Username/Password");
           }
         }

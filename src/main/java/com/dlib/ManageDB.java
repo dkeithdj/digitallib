@@ -24,6 +24,8 @@ public class ManageDB {
   private static JButton backupReset, importSQL, importConfirm;
   private static JLabel filenamePrmpt, statusImport;
   private static JTextField fileNameIn;
+  private static TableOf manBook = new TableOf("books", BooksTable.col);
+  private static TableOf manMem = new MembersTable().getTableData();
 
   public static void manDB() {
 
@@ -38,21 +40,23 @@ public class ManageDB {
     backupReset.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String fileName = ("libraryDB"+dateToday+".sql");
-        String[] command = {"cmd.exe", "/c", "mysqldump.exe -uroot -proot", "library", ">", "data/" + fileName};
+        String fileName = ("libraryDB" + dateToday + ".sql");
+        String[] command = { "cmd.exe", "/c", "mysqldump.exe -uroot -proot", "library", ">", "data/" + fileName };
 
-        int[] DBData = {Utils.getTableRowNum("members"), Utils.getTableRowNum("books"), Utils.getTableRowNum("issuedBooks")};
+        int[] DBData = { Utils.getTableRowNum("members"), Utils.getTableRowNum("books"),
+            Utils.getTableRowNum("issuedBooks") };
         int totalRows = 0;
 
         for (int i = 0; i < DBData.length; i++) {
-          totalRows+=DBData[i];
+          totalRows += DBData[i];
         }
 
         try {
           if (totalRows > 0) {
             Process proc = new ProcessBuilder(command).start();
             proc.waitFor();
-            JOptionPane.showMessageDialog(frm, "Finished backed-up with filename " + fileName + "\nFile can be found inside the 'data' directory");
+            JOptionPane.showMessageDialog(frm,
+                "Finished backed-up with filename " + fileName + "\nFile can be found inside the 'data' directory");
           } else {
             JOptionPane.showMessageDialog(frm, "Database is currently empty!");
           }
@@ -63,8 +67,9 @@ public class ManageDB {
         }
 
         InitDB.initializeDB();
-        BooksTable.bookTable.setModel(BooksTable.showBooksTable());
-        MembersTable.memTable.setModel(MembersTable.showMembersTable());
+        // refresh tables
+        BooksTable.bookTable.setModel(manBook.setupTable());
+        MembersTable.memTable.setModel(manMem.setupTable());
       }
     });
 
@@ -102,8 +107,8 @@ public class ManageDB {
 
         String fileName = fileNameIn.getText();
 
-        File fileN = new File("data/"+fileName+".sql");
-        String[] command = {"cmd.exe", "/c", "mysql.exe -uroot -proot", "library", "<", "data/" + fileName + ".sql"};
+        File fileN = new File("data/" + fileName + ".sql");
+        String[] command = { "cmd.exe", "/c", "mysql.exe -uroot -proot", "library", "<", "data/" + fileName + ".sql" };
         if (fileN.exists()) {
           try {
             Process proc = new ProcessBuilder(command).start();
@@ -121,8 +126,9 @@ public class ManageDB {
           statusImport.setText("File not found, please double check");
         }
 
-        BooksTable.bookTable.setModel(BooksTable.showBooksTable());
-        MembersTable.memTable.setModel(MembersTable.showMembersTable());
+        // refresh tables
+        BooksTable.bookTable.setModel(manBook.setupTable());
+        MembersTable.memTable.setModel(manMem.setupTable());
       }
     });
 

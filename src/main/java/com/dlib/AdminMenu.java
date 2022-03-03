@@ -34,7 +34,7 @@ public class AdminMenu {
       }
     });
 
-    if (Utils.hasDatabaseSetup() == true) {
+    if (Utils.hasDatabaseSetup()) {
       mPnl.add(BooksTable.booksTable(), "spany 2, grow");
       mPnl.add(MembersTable.membersTable(), "wrap, grow");
       mPnl.add(showIB, "split, right");
