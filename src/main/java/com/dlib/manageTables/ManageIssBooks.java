@@ -2,22 +2,27 @@ package com.dlib.manageTables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import com.dlib.BooksTable;
 import com.dlib.IssuedBooksTable;
+import com.dlib.MembersTable;
 import com.dlib.TableOf;
 import com.dlib.Utils;
 
@@ -25,16 +30,87 @@ import net.miginfocom.swing.MigLayout;
 
 public class ManageIssBooks {
 
-  private static JPanel pnl;
-  private static JFrame frm;
+  private JPanel pnl;
+  private JFrame frm;
+  private JTable tbl, btbl;
 
-  private static JLabel ibIBID, ibMID, ibBID, ibLName, ibBTitle, ibBrwDate, ibDuration, ibRetDate, issueStatus;
-  private static JTextField ibidIn, midIn, bidIn, lNameIn, bTitleIn, brwDateIn, durationIn, retDateIn;
-  private static JButton retBook, issBook, validateIBID, remIssBook;
-  private static TableOf manBook = new TableOf("books", BooksTable.col);
-  private static TableOf manIssBook = new TableOf("issuedBooks", IssuedBooksTable.col);
+  private JLabel ibIBID, ibMID, ibBID, ibLName, ibBTitle, ibBrwDate, ibDuration, ibRetDate, issueStatus;
+  private JTextField ibidIn, midIn, bidIn, lNameIn, bTitleIn, brwDateIn, durationIn, retDateIn;
+  private JButton retBook, issBook, validateIBID, remIssBook;
+  private JComboBox<String> midInPick, bidInPick, ibidInPick;
+  // private TableOf manMem = new TableOf("members", MembersTable.col);
+  private TableOf manMem = new MembersTable().getTableData();
+  // private TableOf manBook = new TableOf("books", BooksTable.col);
+  private TableOf manBook = new ManageBooks().getTableData();
+  private TableOf manIssBook = new TableOf("issuedBooks", IssuedBooksTable.col);
+  private ArrayList<String> l;
+  private ArrayList<String> out;
 
-  public static void issueBook() {
+  private ArrayList<String> memCol, bookCol, issBookCol;
+
+  private ArrayList<String> upMem, upBook;
+
+  private ArrayList<JTextField> jtIns;
+  private ArrayList<String> jtTxts;
+
+  private String bookId;
+
+  public ManageIssBooks() {
+  }
+
+  public void setBookTable(JTable btbl) {
+    this.btbl = btbl;
+  }
+
+  public void setIssBookTable(JTable tbl) {
+    this.tbl = tbl;
+  }
+
+  private void setOutputValBooks(ArrayList<String> val) {
+    this.upBook = val;
+  }
+
+  private ArrayList<String> getOutputValBooks() {
+    return this.upBook;
+  }
+
+  private ArrayList<String> getOutputValMembers() {
+    return this.upMem;
+  }
+
+  private ArrayList<String> getOutputValIssBooks() {
+    return this.out;
+  }
+
+  private String getDateToday() {
+    DateTimeFormatter brwDate = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    LocalDate today = LocalDate.now();
+    String dateToday = today.format(brwDate);
+    return dateToday;
+  }
+
+  private ArrayList<String> getColumnNames(String tableName) {
+    ArrayList<String> colName = Utils.getTableColName(tableName);
+    // colName.remove(0);
+
+    return colName;
+  }
+
+  // checks if issued books is overdued
+  public static String isOverdue(int duration, String borrowDate, String returnDate) {
+    LocalDate brwDate = LocalDate.parse(borrowDate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+    LocalDate retDate = LocalDate.parse(returnDate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+    Duration diff = Duration.between(brwDate.atStartOfDay(), retDate.atStartOfDay());
+    int period = (int) diff.toDays();
+
+    if (period <= duration) {
+      return "NO";
+    } else {
+      return "YES";
+    }
+  }
+
+  public void issueBook() {
 
     frm = new JFrame("Issue Book");
     pnl = new JPanel();
@@ -42,101 +118,103 @@ public class ManageIssBooks {
     pnl.setLayout(new MigLayout("wrap", "[][]", ""));
 
     ibMID = new JLabel("Member ID(MID): ");
+    l = manMem.getTableIDs();
+    midInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
+    midInPick.setEditable(true);
+
     midIn = new JTextField("", 15);
+
     ibBID = new JLabel("Book ID(BID): ");
+    l = manBook.getTableIDs();
+    bidInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
+    bidInPick.setEditable(true);
+
     bidIn = new JTextField("", 15);
     ibDuration = new JLabel("Days to borrow: ");
     durationIn = new JTextField("", 15);
     ibBrwDate = new JLabel("Borrow Date: ");
     issueStatus = new JLabel("Status: ");
 
-    final JTextField[] txtFields = { midIn, bidIn, durationIn };
-
-    DateTimeFormatter brwDate = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-    LocalDate today = LocalDate.now();
-    final String dateToday = today.format(brwDate);
+    final String dateToday = getDateToday();
     ibBrwDate.setText("Borrow Date: " + dateToday);
+
+    // get this from manageBooks and ManageMembers
+    memCol = getColumnNames("members");
+    memCol.remove(0);
+    bookCol = getColumnNames("books");
+    bookCol.remove(0);
+    issBookCol = getColumnNames("issuedBooks");
+    issBookCol.remove(0);
+
+    // setOutputValBooks(manBook.setEdits(bookCol, sqBID, "select"));
+
+    // mBooks.manBook.getOutput();
+    // TODO: fix this
+
+    // manIssBook.setEdits(issbookCol, "select");
+    // might be a handful but this just converts the string output to an integer
 
     issBook = new JButton("Issue Book!");
     issBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-
-        String sqMID = midIn.getText();
-        String sqBID = bidIn.getText();
+        String sqMID = (String) midInPick.getSelectedItem();
+        String sqBID = (String) bidInPick.getSelectedItem();
         String sqDuration = durationIn.getText();
 
-        String checkMID = ("SELECT m_id FROM members WHERE m_id=" + sqMID);
-        String checkBID = ("SELECT b_id FROM books WHERE b_id=" + sqBID);
+        upMem = manMem.setEdits(memCol, sqMID, "select");
+        upBook = manBook.setEdits(bookCol, sqBID, "select");
 
-        if (sqMID.trim().equals("") || sqBID.trim().equals("") || sqDuration.trim().equals("")) {
-          JOptionPane.showMessageDialog(frm, "There's an empty field!");
+        // setOutputValBooks(upBook);
+        // System.out.println("hays " + upBook);
+        int quantCount = Integer.parseInt(upBook.get(3));
+        int issueCount = Integer.parseInt(upBook.get(4));
+
+        jtTxts = new ArrayList<String>();
+        jtTxts.add(sqMID);
+        jtTxts.add(sqBID);
+        jtTxts.add(upMem.get(1));
+        jtTxts.add(upBook.get(0));
+        jtTxts.add(dateToday);
+        jtTxts.add(sqDuration);
+        jtTxts.add("-");
+        jtTxts.add("-");
+        // add stuff
+        System.out.println(jtTxts);
+
+        if (quantCount != 0) {
+          // needs title,quantity,issued
+          // inserts stuff here
+          manIssBook.setEdits(jtTxts, issBookCol, "insert");
+          quantCount -= 1;
+          issueCount += 1;
+          // upBook.remove(0);
+          upBook.set(3, "" + quantCount);
+          upBook.set(4, "" + issueCount);
+          manBook.setEdits(upBook, bookCol, "update");
+
+          issueStatus.setText("<html>Status: <font color=green>Success</html>");
         } else {
-
-          boolean midExists = Utils.doesIdExist("members", checkMID);
-          boolean bidExists = Utils.doesIdExist("books", checkBID);
-
-          if ((midExists && bidExists) == true) {
-
-            // TODO: refactor?
-            String qry1 = "INSERT INTO issuedBooks(m_id,b_id,brwrLName,bookTitle,issuedDate,borrowPeriod,returnDate,overdued)";
-            String qry2a = ("(SELECT m_id FROM members WHERE m_id=" + sqMID + ")");
-            String qry2b = ("(SELECT b_id FROM books WHERE b_id=" + sqBID + ")");
-            String qry2c = ("(SELECT lastName FROM members WHERE m_id=" + sqMID + ")");
-            String qry2d = ("(SELECT title FROM books WHERE b_id=" + sqBID + ")");
-            String qry2e = ("('" + dateToday + "')");
-            String qry2f = ("(" + sqDuration + ")");
-            String qry2g = ("('-')");
-            String qry2h = ("('-')");
-
-            String qry0 = String.format("%s VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", qry1, qry2a, qry2b, qry2c, qry2d, qry2e,
-                qry2f, qry2g, qry2h);
-
-            Connection con = Utils.connectToDB();
-            try {
-              Statement stmt = con.createStatement();
-              stmt.executeUpdate("USE library");
-
-              ResultSet rs = stmt.executeQuery("SELECT quantity,issued FROM books where b_id=" + sqBID);
-
-              if (rs.next() == true) {
-                int quantCount = rs.getInt("quantity");
-                int issueCount = rs.getInt("issued");
-                if (quantCount != 0) {
-                  stmt.executeUpdate(qry0);
-                  quantCount -= 1;
-                  issueCount += 1;
-                  stmt.executeUpdate(
-                      "UPDATE books SET quantity=" + quantCount + ",issued=" + issueCount + " WHERE b_id=" + sqBID);
-                  issueStatus.setText("Status: Successfully issued book");
-                } else {
-                  JOptionPane.showMessageDialog(frm, "Out of stock");
-                }
-              }
-            } catch (Exception ex) {
-              JOptionPane.showMessageDialog(frm, "Unable to issue book, try again");
-              ex.printStackTrace();
-            }
-
-            issueStatus.setText("Status: MID and BID found");
-          } else {
-            issueStatus.setText("Status: MID or BID not found");
-            midIn.setText("");
-            bidIn.setText("");
-          }
+          issueStatus.setText("<html>Status: <font color=red>Out of Stock</html>");
         }
-        for (int i = 0; i < txtFields.length; i++) {
-          txtFields[i].setText("");
-        }
+
+        /*
+         * check select quantity and issued then insert then update quantity and issued
+         * 
+         */
+
+        durationIn.setText("");
+
         // refresh the table
         BooksTable.bookTable.setModel(manBook.setupTable());
-        IssuedBooksTable.issTable.setModel(manIssBook.setupTable());
+        tbl.setModel(manIssBook.setupTable());
       }
+
     });
 
     pnl.add(ibMID);
-    pnl.add(midIn);
+    pnl.add(midInPick, "grow");
     pnl.add(ibBID);
-    pnl.add(bidIn);
+    pnl.add(bidInPick, "grow");
     pnl.add(ibDuration);
     pnl.add(durationIn);
     pnl.add(ibBrwDate);
@@ -151,7 +229,7 @@ public class ManageIssBooks {
 
   }
 
-  public static void returnBook() {
+  public void returnBook() {
 
     frm = new JFrame("Return Book");
     pnl = new JPanel();
@@ -159,7 +237,11 @@ public class ManageIssBooks {
     pnl.setLayout(new MigLayout("wrap", "[][]", ""));
 
     ibIBID = new JLabel("Issue Book ID(IBID): ");
-    ibidIn = new JTextField("", 15);
+    l = manIssBook.getTableIDs();
+    ibidInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
+    ibidInPick.setEditable(true);
+
+    // ibidIn = new JTextField("", 15);
     ibMID = new JLabel("Member ID(MID): ");
     midIn = new JTextField("", 15);
     ibBID = new JLabel("Book ID(BID): ");
@@ -176,128 +258,150 @@ public class ManageIssBooks {
     retDateIn = new JTextField("", 15);
     issueStatus = new JLabel("Status: ");
 
-    final JTextField[] txtInputs = { midIn, bidIn, lNameIn, bTitleIn, brwDateIn, durationIn, retDateIn };
+    retBook = new JButton("Return Book!");
 
-    DateTimeFormatter brwDate = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-    LocalDate today = LocalDate.now();
-    final String dateToday = today.format(brwDate);
-    retDateIn.setText(dateToday);
+    jtIns = new ArrayList<JTextField>();
+    jtIns.add(midIn);
+    jtIns.add(bidIn);
+    jtIns.add(lNameIn);
+    jtIns.add(bTitleIn);
+    jtIns.add(brwDateIn);
+    jtIns.add(durationIn);
+    jtIns.add(retDateIn);
 
-    for (int i = 0; i < txtInputs.length; i++) {
-      txtInputs[i].setEditable(false);
+    // { midIn, bidIn, lNameIn, bTitleIn, brwDateIn, durationIn, retDateIn };
+
+    // DateTimeFormatter brwDate = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    // LocalDate today = LocalDate.now();
+    // final String dateToday = today.format(brwDate);
+    retDateIn.setText(getDateToday());
+
+    for (int i = 0; i < jtIns.size(); i++) {
+      jtIns.get(i).setEditable(false);
+      // txtInputs[i].setEditable(false);
     }
-    validateIBID = new JButton("Check");
-    validateIBID.addActionListener(new ActionListener() {
+    retBook.setEnabled(false);
+
+    final ArrayList<String> issBookCol = getColumnNames("issuedBooks");
+    issBookCol.remove(0);
+    issBookCol.remove(issBookCol.size() - 1);
+
+    ibidInPick.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        Connection con = Utils.connectToDB();
+        String qIBID = (String) ibidInPick.getSelectedItem();
+        // Connection con = Utils.connectToDB();
+        out = manIssBook.setEdits(issBookCol, qIBID, "select");
+        out.set(out.size() - 1, getDateToday());
+        bookId = out.get(1);
 
-        ArrayList<String> issBookCol = Utils.getTableColName("issuedBooks");
-        issBookCol.remove(0);
-        issBookCol.remove(issBookCol.size() - 1);
-
-        String qIBID = ibidIn.getText();
-
-        if (qIBID == null || qIBID.trim().equals("")) {
-          for (int i = 0; i < txtInputs.length; i++) {
-            txtInputs[i].setEditable(false);
-            txtInputs[i].setText("");
+        if (out != null) {
+          retBook.setEnabled(true);
+          for (int i = 0; i < jtIns.size(); i++) {
+            jtIns.get(i).setText((out.get(i)));
+            // jtIns.get(i).setEnabled(true);
           }
-          issueStatus.setText("Status: Invalid");
+          issueStatus.setText("<html>Status: <font color=green>ID found</html>");
         } else {
-          String checkIBID = ("SELECT ib_id FROM issuedBooks WHERE ib_id=" + qIBID);
-          String getIBIDValues = ("SELECT * FROM issuedBooks WHERE ib_id=" + qIBID);
-
-          try {
-            Statement pstmt = con.createStatement();
-            pstmt.executeUpdate("USE library");
-
-            boolean midExists = Utils.doesIdExist("issuedBooks", checkIBID);
-
-            if (midExists == true) {
-              ResultSet rs = pstmt.executeQuery(getIBIDValues);
-              while (rs.next()) {
-                for (int i = 0; i < txtInputs.length; i++) {
-                  txtInputs[i].setText(rs.getString(issBookCol.get(i)));
-                  txtInputs[txtInputs.length - 1].setText(dateToday);
-
-                  // txtInputs[0].setText(rs.getString("m_id"));
-                  // txtInputs[1].setText(rs.getString("b_id"));
-                  // txtInputs[2].setText(rs.getString("brwrLName"));
-                  // txtInputs[3].setText(rs.getString("bookTitle"));
-                  // txtInputs[4].setText(rs.getString("issuedDate"));
-                  // txtInputs[5].setText(rs.getString("borrowPeriod"));
-
-                  txtInputs[i].setEditable(false);
-                }
-              }
-              issueStatus.setText("Status: IBID Exists");
-              retBook.setEnabled(true);
-            } else {
-              for (int i = 0; i < txtInputs.length; i++) {
-                txtInputs[i].setEditable(false);
-                txtInputs[i].setText("");
-              }
-              retBook.setEnabled(false);
-              ibidIn.setText("");
-              issueStatus.setText("Status: IBID not found");
-            }
-          } catch (Exception ex) {
-            JOptionPane.showMessageDialog(frm, "Input must be a number");
-            ex.printStackTrace();
-          }
+          issueStatus.setText("<html>Status: <font color=red>Invalid</html>");
         }
       }
     });
+    final ArrayList<String> ibCol = getColumnNames("issuedBooks");
+    ibCol.remove(0);
+    // issBookCol.remove(issBookCol.size() - 1);
+    final ArrayList<String> bookCol = getColumnNames("books");
+    bookCol.remove(0);
 
-    retBook = new JButton("Return Book!");
+    jtIns.remove(jtIns.size() - 1);
     retBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        String isOverdued = isOverdue(Integer.parseInt(durationIn.getText()), brwDateIn.getText(), retDateIn.getText());
 
-        String sqIBID = ibidIn.getText();
-        String sqBID = bidIn.getText();
+        ArrayList<String> jtTxt = new ArrayList<String>();
+        for (int i = 0; i < jtIns.size(); i++) {
+          jtTxt.add(jtIns.get(i).getText());
+        }
 
-        String checkIBID = ("SELECT ib_id FROM issuedBooks WHERE ib_id=" + sqIBID);
+        jtTxt.add(isOverdued);
 
-        if (sqIBID == null || sqIBID.trim().equals("")) {
-          JOptionPane.showMessageDialog(frm, "There's an empty field!");
+        // System.out.println(jtTxt);
+        // System.out.println(isOverdued);
+
+        ArrayList<String> bookstuff = manBook.setEdits(bookCol, bidIn.getText(), "select");
+        System.out.println(bookstuff);
+
+        int quantCount = Integer.parseInt(bookstuff.get(3));
+        int issueCount = Integer.parseInt(bookstuff.get(4));
+
+        if (issueCount != 0) {
+
+          manIssBook.setEdits(jtTxt, ibCol, "update");
+          quantCount += 1;
+          issueCount -= 1;
+          // upBook.remove(0);
+          bookstuff.set(3, "" + quantCount);
+          bookstuff.set(4, "" + issueCount);
+          manBook.setEdits(bookstuff, bookCol, "update");
+
+          issueStatus.setText("<html>Status: <font color=green>Book returned</html>");
         } else {
-
-          boolean ibidExists = Utils.doesIdExist("issuedBooks", checkIBID);
-
-          if (ibidExists == true) {
-            Utils.IBUpdate(sqBID, sqIBID, dateToday, frm);
-
-            issueStatus.setText("Status: Returned");
-            ibidIn.setText("");
-          } else {
-            issueStatus.setText("Status: IBID not found");
-            ibidIn.setText("");
-          }
+          issueStatus.setText("<html>Status: <font color=red>Book already returned</html>");
         }
+        // TODO: put isOverdue()
 
-        for (int i = 0; i < txtInputs.length; i++) {
-          txtInputs[i].setText("");
+        for (int i = 0; i < jtIns.size(); i++) {
+          jtIns.get(i).setEditable(false);
+          jtIns.get(i).setText("");
         }
+        retBook.setEnabled(false);
+        // String sqBID = bidIn.getText();
+
+        // select issuedbooks and books
+        // get issueDate from select
+        // compare issueDate to currentDate (datToday)
+        // get book quantity and issued
+
+        // String checkIBID = ("SELECT ib_id FROM issuedBooks WHERE ib_id=" + sqIBID);
+
+        // if (sqIBID == null || sqIBID.trim().equals("")) {
+        // JOptionPane.showMessageDialog(frm, "There's an empty field!");
+        // } else {
+
+        // boolean ibidExists = Utils.doesIdExist("issuedBooks", checkIBID);
+
+        // if (ibidExists == true) {
+        // // Utils.IBUpdate(sqBID, sqIBID, dateToday, frm);
+
+        // issueStatus.setText("Status: Returned");
+        // ibidIn.setText("");
+        // } else {
+        // issueStatus.setText("Status: IBID not found");
+        // ibidIn.setText("");
+        // }
+        // }
+
+        // for (int i = 0; i < txtInputs.length; i++) {
+        // txtInputs[i].setText("");
+        // }
 
         // refresh the table
-        BooksTable.bookTable.setModel(manBook.setupTable());
-        IssuedBooksTable.issTable.setModel(manIssBook.setupTable());
+        manBook.getTable().setModel(manBook.setupTable());
+        tbl.setModel(manIssBook.setupTable());
       }
     });
 
     if (Utils.getTableRowNum("issuedBooks") == 0) {
-      ibidIn.setEnabled(false);
-      validateIBID.setEnabled(false);
+      // ibidIn.setEnabled(false);
+      // validateIBID.setEnabled(false);
       retBook.setEnabled(false);
       retDateIn.setText("");
       issueStatus.setText("Status: Nothing to return");
     }
 
     pnl.add(ibIBID);
-    pnl.add(ibidIn);
-    pnl.add(issueStatus);
-    pnl.add(validateIBID, "split, right, wrap");
+    pnl.add(ibidInPick, "grow");
+    pnl.add(issueStatus, "span");
     pnl.add(ibMID);
     pnl.add(midIn);
     pnl.add(ibBID);
@@ -321,7 +425,7 @@ public class ManageIssBooks {
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 
-  public static void remIssBook() {
+  public void remIssBook() {
 
     frm = new JFrame("Remove Book");
     pnl = new JPanel();
@@ -368,7 +472,7 @@ public class ManageIssBooks {
         }
         ibidIn.setText("");
         // refresh the table
-        IssuedBooksTable.issTable.setModel(manIssBook.setupTable());
+        tbl.setModel(manIssBook.setupTable());
       }
     });
     if (Utils.getTableRowNum("issuedBooks") == 0) {
@@ -386,5 +490,43 @@ public class ManageIssBooks {
     frm.pack();
     frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+  }
+
+  // updates the quantity of the books from the booksTable when RETURNING
+  // private void updateQuantity(ArrayList<String> jtIns, int quantCount, int
+  // issueCount, String dateToday) {
+  // select ibid then update quantities, then update dates then update ifOverdued
+  // this.updateQuantity(null, quantCount, issueCount, "update", false); // <-
+  // update quantities
+
+  // get this stuff to update
+  // int duration = rs.getInt("borrowPeriod");
+  // String brwDateValue = rs.getString("issuedDate");
+  // String retDateValue = rs.getString("returnDate");
+
+  // int changeq = 1, changei = -1;
+
+  // // if (borrow) {
+  // // changeq = -1;
+  // // changei = 1;
+  // // }
+  // if (quantCount != 0) {
+  // // needs title,quantity,issued
+  // // inserts stuff here
+  // manIssBook.setEdits(jtIns, issBookCol, "update");
+  // quantCount += changeq;
+  // issueCount += changei;
+  // // upBook.remove(0);
+  // upBook.set(3, "" + quantCount);
+  // upBook.set(4, "" + issueCount);
+  // manBook.setEdits(upBook, bookCol, "update");
+
+  // }
+  // this.updateQuantity(jtTxts, quantCount, issueCount, "update", false);
+  // }
+
+  // updates the quantity of the books from the booksTable when BORROWING
+  private void updateQuantity(ArrayList<String> colN, final ArrayList<String> jtIns, int quantCount, int issueCount,
+      String action, boolean borrow) {
   }
 }
