@@ -9,6 +9,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import com.dlib.BooksTable;
@@ -20,19 +21,33 @@ import net.miginfocom.swing.MigLayout;
 // TODO: Refactor stuff
 public class ManageBooks {
 
-  private static JPanel pnl;
-  private static JFrame frm;
+  private JPanel pnl;
+  private JFrame frm;
+  private JTable tbl;
 
-  private static JLabel bTitle, bAuthor, bGenre, bQuantity, bIssued, bPubYear, BIDVal, bookStatus, bookID;
-  private static JTextField titleIn, authorIn, genreIn, quantityIn, issuedIn, pubYearIn;
-  private static JButton addBook, editBook, remBook;
-  private static JComboBox<String> BIDInPick;
-  private static TableOf manBook = new TableOf("books", BooksTable.col);
-  private static ArrayList<JTextField> jtIns;
-  private static ArrayList<String> l;
+  private JLabel bTitle, bAuthor, bGenre, bQuantity, bIssued, bPubYear, BIDVal, bookStatus, bookID;
+  private JTextField titleIn, authorIn, genreIn, quantityIn, issuedIn, pubYearIn;
+  private JButton addBook, editBook, remBook;
+  private JComboBox<String> BIDInPick;
+  public TableOf manBook = new TableOf("books", BooksTable.col);
+  private ArrayList<JTextField> jtIns;
+  private ArrayList<String> l;
+
+  public ArrayList<String> bookOut;
+  private ArrayList<String> bookCol;
+  private ArrayList<String> out;
+
+  public void setBookTable(JTable btbl) {
+    this.tbl = btbl;
+  }
+
+  public TableOf getTableData() {
+    return this.manBook;
+  }
 
   // Add Book
-  public static void addBook() {
+  public void addBook() {
+    // getInputs that will send to booksTable
 
     frm = new JFrame("Add Book");
     pnl = new JPanel();
@@ -53,31 +68,34 @@ public class ManageBooks {
     pubYearIn = new JTextField("", 15);
     bookStatus = new JLabel("Status: ");
 
+    // select option needs to be global
+    // TODO: separate logic and stuff from gui
+    // TODO: only set stuff here
+    // TODO: just moved some stuff outside the actionlistener
+    jtIns = new ArrayList<JTextField>();
+    jtIns.add(titleIn);
+    jtIns.add(authorIn);
+    jtIns.add(genreIn);
+    jtIns.add(quantityIn);
+    jtIns.add(issuedIn);
+    jtIns.add(pubYearIn);
+
+    bookCol = Utils.getTableColName("books");
+    bookCol.remove(0);
+
+    final ArrayList<String> jtTxt = new ArrayList<String>();
+
     addBook = new JButton("Add Book!");
     addBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-
-        jtIns = new ArrayList<JTextField>();
-        jtIns.add(titleIn);
-        jtIns.add(authorIn);
-        jtIns.add(genreIn);
-        jtIns.add(quantityIn);
-        jtIns.add(issuedIn);
-        jtIns.add(pubYearIn);
-
-        ArrayList<String> bookCol = Utils.getTableColName("books");
-        bookCol.remove(0);
-
-        ArrayList<String> jtTxt = new ArrayList<String>();
 
         for (int i = 0; i < jtIns.size(); i++) {
           jtTxt.add(jtIns.get(i).getText());
         }
 
-        boolean cor = manBook.setEdits(jtTxt, bookCol, "insert");
-        // boolean cor = manBook.setModTable(jtIns, bookCol);
+        out = manBook.setEdits(jtTxt, bookCol, "insert");
 
-        if (cor) {
+        if (out != null) {
           // removes issuedIn
           jtIns.remove(4);
           for (int i = 0; i < jtIns.size(); i++) {
@@ -89,7 +107,8 @@ public class ManageBooks {
         }
 
         // refresh the table
-        BooksTable.bookTable.setModel(manBook.setupTable());
+        // tbl.setModel(manBook.setupTable());
+        tbl.setModel(manBook.setupTable());
       }
     });
 
@@ -117,7 +136,7 @@ public class ManageBooks {
 
   // Edit Book
 
-  public static void editBook() {
+  public void editBook() {
 
     frm = new JFrame("Edit Book");
     pnl = new JPanel();
@@ -153,26 +172,28 @@ public class ManageBooks {
     for (int i = 0; i < jtIns.size(); i++) {
       jtIns.get(i).setText("");
       jtIns.get(i).setEnabled(false);
-      editBook.setEnabled(false);
     }
+    editBook.setEnabled(false);
+
+    final String qBID = (String) BIDInPick.getSelectedItem();
+    final ArrayList<String> bookCol = Utils.getTableColName("books");
+
+    bookCol.remove(0);
+    bookCol.remove(4);
+
+    out = manBook.setEdits(bookCol, qBID, "select");
 
     // TODO: get inputs
     // qBID,bookCol
     BIDInPick.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String qBID = (String) BIDInPick.getSelectedItem();
+        // System.out.println(bookCol);
 
-        ArrayList<String> bookCol = Utils.getTableColName("books");
-        bookCol.remove(0);
-        bookCol.remove(4);
-
-        boolean out = manBook.setEdits(bookCol, qBID, "select");
-
-        editBook.setEnabled(out);
-        if (out) {
+        if (out != null) {
+          editBook.setEnabled(true);
           for (int i = 0; i < jtIns.size(); i++) {
-            jtIns.get(i).setText((manBook.getOutput().get(i)));
+            jtIns.get(i).setText((out.get(i)));
             jtIns.get(i).setEnabled(true);
           }
           bookStatus.setText("<html>Status: <font color=green>Success</html>");
@@ -189,31 +210,33 @@ public class ManageBooks {
     editBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        ArrayList<String> bookCol = Utils.getTableColName("books");
-        bookCol.remove(0);
-        bookCol.remove(4);
+        // ArrayList<String> bookCol = Utils.getTableColName("books");
+        // bookCol.remove(0);
+        // bookCol.remove(4);
 
         ArrayList<String> jtTxt = new ArrayList<String>();
         for (int i = 0; i < jtIns.size(); i++) {
           jtTxt.add(jtIns.get(i).getText());
         }
 
-        boolean out = manBook.setModTable(jtIns, bookCol, "update");
+        // boolean out = manBook.setModTable(jtIns, bookCol, "update");
+        out = manBook.setEdits(jtTxt, bookCol, "update");
 
-        editBook.setEnabled(out);
-        if (out) {
+        if (out != null) {
+          editBook.setEnabled(true);
           bookStatus.setText("<html>Status: <font color=green>Success</html>");
         } else {
           bookStatus.setText("<html>Status: <font color=red>Check input fields</html>");
         }
 
         for (int i = 0; i < jtIns.size(); i++) {
+          editBook.setEnabled(false);
           jtIns.get(i).setEnabled(false);
           jtIns.get(i).setText("");
         }
 
         // refresh the table
-        BooksTable.bookTable.setModel(manBook.setupTable());
+        tbl.setModel(manBook.setupTable());
       }
     });
 
@@ -245,7 +268,7 @@ public class ManageBooks {
   }
 
   // Remove Book
-  public static void removeBook() {
+  public void removeBook() {
 
     frm = new JFrame("Remove Book");
     pnl = new JPanel();
@@ -260,22 +283,19 @@ public class ManageBooks {
     remBook = new JButton("Remove Book!");
     remBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-
         String qBID = (String) BIDInPick.getSelectedItem();
 
-        ArrayList<String> bookCol = Utils.getTableColName("members");
-        bookCol.remove(0);
+        // TODO: CONTINUE FINISH TOMS
+        boolean isDeleted = manBook.deleteRow(qBID);
 
-        boolean out = manBook.setEdits(bookCol, qBID, "delete");
-
-        if (out) {
+        if (isDeleted) {
           bookStatus.setText("<html>Status: <font color=green>Success</html>");
         } else {
           bookStatus.setText("<html>Status: <font color=red>Unable to remove</html>");
         }
 
         // refresh the table
-        BooksTable.bookTable.setModel(manBook.setupTable());
+        tbl.setModel(manBook.setupTable());
       }
     });
 
