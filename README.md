@@ -1,8 +1,7 @@
-
 # Digital Library
 
 ### Dependencies in order to work:
- 
+
 - MySQL
 - maven
 - Java
@@ -14,7 +13,7 @@
 Run `initialize.bat` to compile and export the project to a .jar file  
 then run `digitalLibrary.bat` to start the project.
 
-### Demo
+### Demo [OUTDATED]
 
 #### Add/Edit/Remove Books
 
