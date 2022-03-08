@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,7 +14,7 @@ import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
 
-public class ManageDB {
+public class ManageDB extends TableOf {
 
   private JFrame frm;
   private JPanel pnl;
@@ -24,27 +22,29 @@ public class ManageDB {
   private JButton backupReset, importSQL, importConfirm;
   private JLabel filenamePrmpt, statusImport;
   private JTextField fileNameIn;
-  private TableOf manBook = new TableOf("books", BooksTable.col);
-  private TableOf manMem = new MembersTable().getTableData();
+
+  private TableOf members = new ManageMembers();
+  private TableOf issBooks = new ManageIssBooks();
+
+  // just used books as you need to have a db name to initialize
+  public ManageDB() {
+    super("books");
+  }
 
   public void manDB() {
 
     frm = new JFrame("Manage Database");
     pnl = new JPanel(new MigLayout("center", "", "[][]"));
 
-    DateTimeFormatter brwDate = DateTimeFormatter.ofPattern("MMddyyyy-HHmm");
-    LocalDateTime today = LocalDateTime.now();
-    final String dateToday = today.format(brwDate);
-
     backupReset = new JButton("Backup and Reset");
+
     backupReset.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String fileName = ("libraryDB" + dateToday + ".sql");
+        String fileName = ("libraryDB" + getDateToday("MMdd-HHmm") + ".sql");
         String[] command = { "cmd.exe", "/c", "mysqldump.exe -uroot -proot", "library", ">", "data/" + fileName };
 
-        int[] DBData = { Utils.getTableRowNum("members"), Utils.getTableRowNum("books"),
-            Utils.getTableRowNum("issuedBooks") };
+        int[] DBData = { getTableRowNum(), members.getTableRowNum(), issBooks.getTableRowNum() };
         int totalRows = 0;
 
         for (int i = 0; i < DBData.length; i++) {
@@ -68,8 +68,10 @@ public class ManageDB {
 
         new InitDB().initializeDB();
         // refresh tables
-        BooksTable.bookTable.setModel(manBook.setupTable());
-        MembersTable.memTable.setModel(manMem.setupTable());
+        refreshTable();
+        // ManageBooks.bookJTbl.setModel(new ManageBooks().setupTable());
+        // ManageMembers.memJTbl.setModel(new ManageMembers().setupTable());
+        // ManageIssBooks.issbookJTbl.setModel(new ManageIssBooks().setupTable());
       }
     });
 
@@ -127,8 +129,10 @@ public class ManageDB {
         }
 
         // refresh tables
-        BooksTable.bookTable.setModel(manBook.setupTable());
-        MembersTable.memTable.setModel(manMem.setupTable());
+        refreshTable();
+        // ManageBooks.bookJTbl.setModel(new ManageBooks().setupTable());
+        // ManageMembers.memJTbl.setModel(new ManageMembers().setupTable());
+        // ManageIssBooks.issbookJTbl.setModel(new ManageIssBooks().setupTable());
       }
     });
 
