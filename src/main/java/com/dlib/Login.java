@@ -14,20 +14,20 @@ import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 
 public class Login {
-  private static JTextField userNInput;
-  private static JPasswordField userPInput;
+  private JTextField userNInput;
+  private JPasswordField userPInput;
 
-  private static JPanel pnlMain, pnlLog;
-  private static JLabel userName, userPass;
+  private JPanel pnlMain, pnlLog;
+  private JLabel userName, userPass;
 
-  private static JButton loginButton;
+  private JButton loginButton;
 
-  private static JFrame frm;
+  private JFrame frm;
 
-  private static final String adminUName = "admin";
-  private static final String adminPass = "admin";
+  private final String adminUName = "admin";
+  private final String adminPass = "admin";
 
-  public static void login() {
+  public void login() {
 
     frm = new JFrame("Login");
     pnlMain = new JPanel();
@@ -53,7 +53,7 @@ public class Login {
         } else {
           if (accName.equals(adminUName) && accPass.equals(adminPass)) {
             frm.dispose();
-            AdminMenu.adminPage();
+            new AdminMenu().adminPage();
           } else {
             JOptionPane.showMessageDialog(null, "Incorrect Username/Password");
           }

@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 public class InitDB {
 
-  public static boolean initializeDB() {
+  public boolean initializeDB() {
     try {
       Connection con = Utils.connectToDB();
 
@@ -47,10 +47,10 @@ public class InitDB {
     }
   }
 
-  public static void redirectToAdPage() {
+  public void redirectToAdPage() {
     try {
       if (initializeDB()) {
-        AdminMenu.adminPage();
+        new AdminMenu().adminPage();
       }
     } catch (Exception e) {
       e.printStackTrace();

@@ -18,16 +18,16 @@ import net.miginfocom.swing.MigLayout;
 
 public class ManageDB {
 
-  private static JFrame frm;
-  private static JPanel pnl;
+  private JFrame frm;
+  private JPanel pnl;
 
-  private static JButton backupReset, importSQL, importConfirm;
-  private static JLabel filenamePrmpt, statusImport;
-  private static JTextField fileNameIn;
-  private static TableOf manBook = new TableOf("books", BooksTable.col);
-  private static TableOf manMem = new MembersTable().getTableData();
+  private JButton backupReset, importSQL, importConfirm;
+  private JLabel filenamePrmpt, statusImport;
+  private JTextField fileNameIn;
+  private TableOf manBook = new TableOf("books", BooksTable.col);
+  private TableOf manMem = new MembersTable().getTableData();
 
-  public static void manDB() {
+  public void manDB() {
 
     frm = new JFrame("Manage Database");
     pnl = new JPanel(new MigLayout("center", "", "[][]"));
@@ -66,7 +66,7 @@ public class ManageDB {
           e1.printStackTrace();
         }
 
-        InitDB.initializeDB();
+        new InitDB().initializeDB();
         // refresh tables
         BooksTable.bookTable.setModel(manBook.setupTable());
         MembersTable.memTable.setModel(manMem.setupTable());
@@ -92,7 +92,7 @@ public class ManageDB {
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 
-  public static void importOpts() {
+  public void importOpts() {
 
     frm = new JFrame("Manage Database");
     pnl = new JPanel(new MigLayout("wrap", "[][]", ""));
