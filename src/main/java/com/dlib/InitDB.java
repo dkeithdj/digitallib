@@ -5,11 +5,11 @@ import java.sql.ResultSet;
 
 import java.sql.Statement;
 
-public class InitDB {
+public class InitDB extends Utils {
 
   public boolean initializeDB() {
     try {
-      Connection con = Utils.connectToDB();
+      Connection con = connectToDB();
 
       ResultSet rSet = con.getMetaData().getCatalogs();
 
@@ -21,6 +21,8 @@ public class InitDB {
           inStmt.executeUpdate("DROP DATABASE library");
         }
       }
+      // This is where the code creates initial values that will be added in the newly
+      // created database
       Statement inStmt = con.createStatement();
       String qry1 = "CREATE DATABASE library";
       String qry2 = "USE library";
@@ -47,6 +49,7 @@ public class InitDB {
     }
   }
 
+  // Will redirect you back to AdminMenu class if initialization has no errors
   public void redirectToAdPage() {
     try {
       if (initializeDB()) {
