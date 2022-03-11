@@ -67,11 +67,6 @@ public class ManageDB extends TableOf {
         }
 
         new InitDB().initializeDB();
-        // refresh tables
-        refreshTable();
-        // ManageBooks.bookJTbl.setModel(new ManageBooks().setupTable());
-        // ManageMembers.memJTbl.setModel(new ManageMembers().setupTable());
-        // ManageIssBooks.issbookJTbl.setModel(new ManageIssBooks().setupTable());
       }
     });
 
@@ -128,11 +123,6 @@ public class ManageDB extends TableOf {
           statusImport.setText("File not found, please double check");
         }
 
-        // refresh tables
-        refreshTable();
-        // ManageBooks.bookJTbl.setModel(new ManageBooks().setupTable());
-        // ManageMembers.memJTbl.setModel(new ManageMembers().setupTable());
-        // ManageIssBooks.issbookJTbl.setModel(new ManageIssBooks().setupTable());
       }
     });
 
