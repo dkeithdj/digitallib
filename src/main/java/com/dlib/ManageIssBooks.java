@@ -1,5 +1,6 @@
 package com.dlib;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.Duration;
@@ -8,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -21,13 +23,9 @@ import net.miginfocom.swing.MigLayout;
 
 public class ManageIssBooks extends TableOf {
 
-  private JPanel pnl;
-  private JFrame frm;
-
-  private JLabel ibIBID, ibMID, ibBID, ibLName, ibBTitle, ibBrwDate, ibDuration, ibRetDate, overdued, issueStatus;
+  private JLabel ibIBID, ibMID, ibBID, ibLName, ibBTitle, ibBrwDate, ibDuration, ibRetDate, overdued, status;
   private JTextField midIn, bidIn, lNameIn, bTitleIn, brwDateIn, durationIn, retDateIn, overduedIn;
   private JButton retBook, issBook, remIssBook;
-  private JComboBox<String> midInPick, bidInPick, ibidInPick;
   private TableOf manMem = new ManageMembers();
   private static TableOf manBook = new ManageBooks();
   private ArrayList<String> l;
@@ -36,6 +34,7 @@ public class ManageIssBooks extends TableOf {
   private ArrayList<String> jtTxts;
   public String issueBooksColumn[] = { "IBID", "MID", "BID", "LAST NAME", "BOOK TITLE", "DATE ISSUED", "DURATION",
       "DATE RETURNED", "OVERDUED" };
+  private JTextField ibidIn;
 
   public ManageIssBooks() {
     super("issuedBooks");
@@ -58,57 +57,45 @@ public class ManageIssBooks extends TableOf {
 
   public void issueBook() {
 
-    frm = new JFrame("Issue Book");
-    pnl = new JPanel();
-
-    pnl.setLayout(new MigLayout("wrap", "[][]", ""));
-
     ibMID = new JLabel("Member ID(MID): ");
-    l = manMem.getTableIDs();
-    midInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
-    midInPick.setEditable(true);
-
-    midIn = new JTextField("", 15);
-
+    midIn = new JTextField(15);
     ibBID = new JLabel("Book ID(BID): ");
-    l = manBook.getTableIDs();
-    bidInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
-    bidInPick.setEditable(true);
-
-    bidIn = new JTextField("", 15);
+    bidIn = new JTextField(15);
     ibDuration = new JLabel("Days to borrow: ");
-    durationIn = new JTextField("", 15);
+    durationIn = new JTextField(15);
     ibBrwDate = new JLabel("Borrow Date: ");
-    issueStatus = new JLabel("Status: ");
+    brwDateIn = new JTextField(15);
+    brwDateIn.setEditable(false);
+    status = new JLabel("Status: ");
 
-    ibBrwDate.setText("Borrow Date: " + getDateToday());
+    brwDateIn.setText(getDateToday());
 
     issBook = new JButton("Issue Book!");
     issBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String sqMID = (String) midInPick.getSelectedItem();
-        String sqBID = (String) bidInPick.getSelectedItem();
+        String sqMID = midIn.getText();
+        String sqBID = bidIn.getText();
         String sqDuration = durationIn.getText();
 
-        Map<String, String> upMem = manMem.selectRow(sqMID);
-        Map<String, String> upBook = manBook.selectRow(sqBID);
+        if (validateID(sqBID) && validateID(sqMID)) {
 
-        jtTxts = new ArrayList<String>();
-        jtTxts.add(sqMID);
-        jtTxts.add(sqBID);
-        jtTxts.add(upMem.get("lastName"));
-        jtTxts.add(upBook.get("title"));
-        jtTxts.add(getDateToday());
-        jtTxts.add(sqDuration);
-        jtTxts.add("-");
-        jtTxts.add("-");
-        // add stuff
+          Map<String, String> upMem = manMem.selectRow(sqMID);
+          Map<String, String> upBook = manBook.selectRow(sqBID);
 
-        int quantCount = Integer.parseInt(upBook.get("quantity"));
-        int issueCount = Integer.parseInt(upBook.get("issued"));
+          jtTxts = new ArrayList<String>();
+          jtTxts.add(sqMID);
+          jtTxts.add(sqBID);
+          jtTxts.add(upMem.get("lastName"));
+          jtTxts.add(upBook.get("title"));
+          jtTxts.add(getDateToday());
+          jtTxts.add(sqDuration);
+          jtTxts.add("-");
+          jtTxts.add("-");
 
-        if (!upMem.isEmpty() || !upBook.isEmpty()) {
+          int quantCount = Integer.parseInt(upBook.get("quantity"));
+          int issueCount = Integer.parseInt(upBook.get("issued"));
+
           if (quantCount != 0) {
 
             insertRow(jtTxts);
@@ -121,27 +108,35 @@ public class ManageIssBooks extends TableOf {
 
             manBook.updateRow(valL, sqBID);
           }
+
+          midIn.setText("");
+          bidIn.setText("");
+          durationIn.setText("");
+
+          status.setText("<html>Status: <font color=green>Book Issued</html>");
+        } else {
+          status.setText("<html>Status: <font color=red> Check ID values</html>");
         }
-
-        durationIn.setText("");
-
-        // refresh the table
-        // bookJTbl.setModel(manBook.setupTable());
-        // issbookJTbl.setModel(setupTable());
-        refreshTable();
 
       }
     });
 
+    frm = new JFrame("Issue Book");
+    pnl = new JPanel();
+
+    pnl.setLayout(new MigLayout("wrap", "[][]", ""));
+
     pnl.add(ibMID);
-    pnl.add(midInPick, "grow");
     pnl.add(ibBID);
-    pnl.add(bidInPick, "grow");
+    pnl.add(midIn);
+    pnl.add(bidIn);
     pnl.add(ibDuration);
-    pnl.add(durationIn);
     pnl.add(ibBrwDate);
-    pnl.add(issueStatus, "skip");
-    pnl.add(issBook, "split, right");
+    pnl.add(durationIn);
+    pnl.add(brwDateIn);
+    pnl.add(status, "span");
+    pnl.add(issBook, "skip,split, right");
+    pnl.setBorder(BorderFactory.createTitledBorder("Issue Books"));
 
     frm.add(pnl);
     frm.setVisible(true);
@@ -159,27 +154,25 @@ public class ManageIssBooks extends TableOf {
     pnl.setLayout(new MigLayout("wrap", "[][]", ""));
 
     ibIBID = new JLabel("Issue Book ID(IBID): ");
-    l = getTableIDs();
-    ibidInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
-    ibidInPick.setEditable(true);
+    ibidIn = new JTextField(15);
 
     ibMID = new JLabel("Member ID(MID): ");
-    midIn = new JTextField("", 15);
+    midIn = new JTextField(15);
     ibBID = new JLabel("Book ID(BID): ");
-    bidIn = new JTextField("", 15);
+    bidIn = new JTextField(15);
     ibLName = new JLabel("Last name: ");
-    lNameIn = new JTextField("", 15);
+    lNameIn = new JTextField(15);
     ibBTitle = new JLabel("Book title: ");
-    bTitleIn = new JTextField("", 15);
+    bTitleIn = new JTextField(15);
     ibBrwDate = new JLabel("Borrow Date: ");
-    brwDateIn = new JTextField("", 15);
+    brwDateIn = new JTextField(15);
     ibDuration = new JLabel("Days to borrow: ");
-    durationIn = new JTextField("", 15);
+    durationIn = new JTextField(15);
     ibRetDate = new JLabel("Return Date: ");
-    retDateIn = new JTextField("", 15);
+    retDateIn = new JTextField(15);
     overdued = new JLabel("Overdued: ");
-    overduedIn = new JTextField("", 15);
-    issueStatus = new JLabel("Status: ");
+    overduedIn = new JTextField(15);
+    status = new JLabel("Status: ");
 
     retBook = new JButton("Return Book!");
 
@@ -200,29 +193,36 @@ public class ManageIssBooks extends TableOf {
     }
     retBook.setEnabled(false);
 
-    ibidInPick.addActionListener(new ActionListener() {
+    ibidIn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        String qIBID = (String) ibidInPick.getSelectedItem();
+        String qIBID = ibidIn.getText();
 
-        Map<String, String> hashOut = selectRow(qIBID);
+        if (validateID(qIBID)) {
 
-        String isOverdued = isOverdue(Integer.parseInt(hashOut.get("borrowPeriod")), hashOut.get("issuedDate"),
-            getDateToday());
+          Map<String, String> hashOut = selectRow(qIBID);
 
-        hashOut.replace("returnDate", getDateToday());
-        hashOut.replace("overdued", isOverdued);
-        System.out.println(hashOut);
+          String isOverdued = isOverdue(Integer.parseInt(hashOut.get("borrowPeriod")), hashOut.get("issuedDate"),
+              getDateToday());
 
-        if (!hashOut.isEmpty()) {
+          hashOut.replace("returnDate", getDateToday());
+          hashOut.replace("overdued", isOverdued);
+          System.out.println(hashOut);
+
           retBook.setEnabled(true);
           int i = 0;
           for (String str : hashOut.values()) {
             jtIns.get(i).setText(str);
             i++;
           }
-          issueStatus.setText("<html>Status: <font color=green>ID found</html>");
+          status.setText("<html>Status: <font color=green>ID found</html>");
+
         } else {
-          issueStatus.setText("<html>Status: <font color=red>Invalid</html>");
+          for (int i = 0; i < jtIns.size(); i++) {
+            jtIns.get(i).setEditable(false);
+            jtIns.get(i).setText("");
+          }
+          retBook.setEnabled(false);
+          status.setText("<html>Status: <font color=red>Invalid</html>");
         }
       }
     });
@@ -230,7 +230,7 @@ public class ManageIssBooks extends TableOf {
     retBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String qIBID = (String) ibidInPick.getSelectedItem();
+        String qIBID = ibidIn.getText();
 
         ArrayList<String> jtTxt = new ArrayList<String>();
         for (int i = 0; i < jtIns.size(); i++) {
@@ -254,9 +254,9 @@ public class ManageIssBooks extends TableOf {
 
           manBook.updateRow(valL, bidIn.getText());
 
-          issueStatus.setText("<html>Status: <font color=green>Book returned</html>");
+          status.setText("<html>Status: <font color=green>Book returned</html>");
         } else {
-          issueStatus.setText("<html>Status: <font color=red>Book already returned</html>");
+          status.setText("<html>Status: <font color=red>Book already returned</html>");
         }
 
         for (int i = 0; i < jtIns.size(); i++) {
@@ -265,22 +265,17 @@ public class ManageIssBooks extends TableOf {
         }
         retBook.setEnabled(false);
 
-        // refresh the table
-        // ManageBooks.bookJTbl.setModel(manBook.setupTable());
-        // issbookJTbl.setModel(setupTable());
-        refreshTable();
       }
     });
 
     if (getTableRowNum("issuedBooks") == 0) {
       retBook.setEnabled(false);
       retDateIn.setText("");
-      issueStatus.setText("Status: Nothing to return");
+      status.setText("Status: Nothing to return");
     }
 
     pnl.add(ibIBID);
-    pnl.add(ibidInPick, "grow");
-    pnl.add(issueStatus, "span");
+    pnl.add(ibidIn);
     pnl.add(ibMID);
     pnl.add(midIn);
     pnl.add(ibBID);
@@ -297,6 +292,7 @@ public class ManageIssBooks extends TableOf {
     pnl.add(retDateIn);
     pnl.add(overdued);
     pnl.add(overduedIn);
+    pnl.add(status, "span");
     pnl.add(retBook, "skip, split, right");
 
     frm.add(pnl);
@@ -308,49 +304,48 @@ public class ManageIssBooks extends TableOf {
 
   public void remIssBook() {
 
-    frm = new JFrame("Remove Book");
-    pnl = new JPanel();
-    pnl.setLayout(new MigLayout("wrap", "[][]", ""));
-
     ibIBID = new JLabel("Issued Book IBID(IBID): ");
-    l = getTableIDs();
-    ibidInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
-    ibidInPick.setEditable(true);
+    ibidIn = new JTextField(15);
 
-    issueStatus = new JLabel("Status: ");
+    status = new JLabel("Status: ");
 
     remIssBook = new JButton("Remove Issued Book!");
     remIssBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String qIBID = (String) ibidInPick.getSelectedItem();
+        String qIBID = ibidIn.getText();
 
-        Map<String, String> ibData = selectRow(qIBID);
+        if (validateID(qIBID)) {
 
-        if (!ibData.get("overdued").equals("-")) {
-          deleteRow(qIBID);
-          if (!ibData.isEmpty()) {
-            issueStatus.setText("<html>Status: <font color=green>Success</html>");
+          Map<String, String> ibData = selectRow(qIBID);
+
+          if (!ibData.get("overdued").equals("-")) {
+            confirm(qIBID, ibData.get("returnDate"));
+            status.setText("<html>Status: <font color=green>ID found</html>");
           } else {
-            issueStatus.setText("<html>Status: <font color=red>Unable to remove</html>");
+            status.setText("<html>Status: <font color=red>Book not yet returned</html>");
           }
+          ibidIn.setText("");
         } else {
-          issueStatus.setText("<html>Status: <font color=red>Book not yet returned</html>");
+          status.setText("<html>Status: <font color=red>Invalid ID</html>");
         }
 
-        // refresh the table
-        issbookJTbl.setModel(setupTable());
       }
     });
     if (getTableRowNum("issuedBooks") == 0) {
-      ibidInPick.setEnabled(false);
+      ibidIn.setEnabled(false);
       remIssBook.setEnabled(false);
-      issueStatus.setText("Status: No Issued Books");
+      status.setText("Status: No Issued Books");
     }
 
+    frm = new JFrame("Remove Book");
+    pnl = new JPanel();
+    pnl.setLayout(new MigLayout("wrap", "[][]", ""));
+
     pnl.add(ibIBID);
-    pnl.add(ibidInPick, "grow");
-    pnl.add(issueStatus, "span");
+    pnl.add(ibidIn);
+
+    pnl.add(status, "span");
     pnl.add(remIssBook, "skip, split, right");
 
     frm.add(pnl);
@@ -360,17 +355,55 @@ public class ManageIssBooks extends TableOf {
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
   }
 
+  public void showTable() {
+    l = getTableColName();
+    pickFilter = new JComboBox<String>(col);
+
+    JLabel searchL = new JLabel("Search: ");
+    final JTextField jtt = new JTextField(15);
+    table = new JTable();
+
+    table.setModel(setupTable());
+    table.getTableHeader().setReorderingAllowed(false);
+    table.setAutoCreateRowSorter(true);
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+    pane = new JScrollPane(table);
+
+    searchFilter = new JButton("Search");
+    searchFilter.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        setData(jtt.getText(), l.get(pickFilter.getSelectedIndex()));
+        table.setModel(setupTable());
+      }
+    });
+    remBut = new JButton("Remove");
+    remBut.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        remIssBook();
+      }
+    });
+
+    frm = new JFrame("Issue Books Table");
+    pnl = new JPanel();
+    pnl.setLayout(new MigLayout("fill, insets 5 5 5 5", "", "[][100%][]"));
+    pnl.add(searchL, "split");
+    pnl.add(jtt, "growx");
+    pnl.add(pickFilter);
+    pnl.add(searchFilter, "wrap");
+    pnl.add(pane, "wrap, grow");
+    pnl.add(remBut, "right");
+
+    frm.add(pnl);
+    frm.setVisible(true);
+    frm.setSize(550, 500);
+    frm.setLocationRelativeTo(null);
+    frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+  }
+
   @Override
   public JPanel getPanel() {
     System.out.println("starting with db " + dbTable);
-    issbookJTbl = new JTable();
-
-    issbookJTbl.setModel(setupTable());
-    issbookJTbl.getTableHeader().setReorderingAllowed(false);
-    issbookJTbl.setAutoCreateRowSorter(true);
-    issbookJTbl.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-    pane = new JScrollPane(issbookJTbl);
 
     panel = new JPanel();
 
@@ -386,17 +419,17 @@ public class ManageIssBooks extends TableOf {
         returnBook();
       }
     });
-    remBut = new JButton("Remove");
-    remBut.addActionListener(new ActionListener() {
+    showTbl = new JButton("Show Table");
+    showTbl.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        remIssBook();
+        showTable();
       }
     });
-    panel.setLayout(new MigLayout("fill, insets 5 5 5 5", "", "[100%][]"));
-    panel.add(pane, "wrap, grow");
+    panel.setLayout(new MigLayout("fill, insets 0", ""));
     panel.add(addBut, "split, right");
     panel.add(editBut);
-    panel.add(remBut);
+    panel.add(showTbl);
+    panel.setBackground(Color.decode("#FCF3E4"));
 
     return panel;
 

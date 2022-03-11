@@ -22,12 +22,14 @@ public class ManageMembers extends TableOf {
   private JFrame frm;
 
   private JTextField fNameIn, lNameIn, addressIn, contactIn;
-  private JLabel fName, lName, address, contact, MIDVal, memStatus, memID;
-  private JComboBox<String> MIDInPick;
+  private JLabel fName, lName, address, contact, MIDVal, memID;
 
   private JButton addMember, editMem, remMem;
   private ArrayList<JTextField> jtIns;
   private String[] membersColumn = { "MID", "FIRST NAME", "LAST NAME", "ADDRESS", "CONTACT" };
+  private JTextField midIn;
+
+  private String qMID = "";
 
   public ManageMembers() {
     super("members");
@@ -35,21 +37,17 @@ public class ManageMembers extends TableOf {
   }
 
   // Add Member
-  public void addMember() {
-
-    frm = new JFrame("Add Member");
-    pnl = new JPanel();
-    pnl.setLayout(new MigLayout("debug, wrap", "[][]", ""));
+  public JPanel addMember() {
 
     fName = new JLabel("First Name: ");
-    fNameIn = new JTextField("", 15);
+    fNameIn = new JTextField(15);
     lName = new JLabel("Last Name: ");
-    lNameIn = new JTextField("", 15);
+    lNameIn = new JTextField(15);
     address = new JLabel("Address: ");
-    addressIn = new JTextField("", 15);
+    addressIn = new JTextField(15);
     contact = new JLabel("Contact Number: ");
-    contactIn = new JTextField("", 15);
-    memStatus = new JLabel("Status: ");
+    contactIn = new JTextField(15);
+    status = new JLabel("Status: ");
 
     jtIns = new ArrayList<JTextField>();
     jtIns.add(fNameIn);
@@ -72,32 +70,30 @@ public class ManageMembers extends TableOf {
           for (int i = 0; i < jtIns.size(); i++) {
             jtIns.get(i).setText("");
           }
-          memStatus.setText("<html>Status: <font color=green>Success</html>");
+          status.setText("<html>Status: <font color=green>Success</html>");
         } else {
-          memStatus.setText("<html>Status: <font color=red>Check input fields</html>");
+          status.setText("<html>Status: <font color=red>Check input fields</html>");
         }
 
-        // refresh table
-        memJTbl.setModel(setupTable());
       }
     });
 
-    pnl.add(fName);
-    pnl.add(fNameIn);
-    pnl.add(lName);
-    pnl.add(lNameIn);
-    pnl.add(address);
-    pnl.add(addressIn);
-    pnl.add(contact);
-    pnl.add(contactIn);
-    pnl.add(memStatus, "span");
-    pnl.add(addMember, "skip, split, right");
+    frm = new JFrame("Add Member");
+    pnl = new JPanel();
+    pnl.setLayout(new MigLayout(" wrap", "[][][][]", ""));
 
-    frm.add(pnl);
-    frm.setVisible(true);
-    frm.pack();
-    frm.setLocationRelativeTo(null);
-    frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    pnl.add(fName);
+    pnl.add(lName);
+    pnl.add(address);
+    pnl.add(contact);
+    pnl.add(fNameIn);
+    pnl.add(lNameIn);
+    pnl.add(addressIn);
+    pnl.add(contactIn);
+    pnl.add(status, "span 3");
+    pnl.add(addMember, " split, right");
+
+    return pnl;
   }
 
   // Edit Member
@@ -105,23 +101,21 @@ public class ManageMembers extends TableOf {
 
     frm = new JFrame("Edit Member");
     pnl = new JPanel();
-    pnl.setLayout(new MigLayout("debug,wrap", "[][]", ""));
+    pnl.setLayout(new MigLayout("wrap", "[][]", ""));
 
     MIDVal = new JLabel("Member ID(MID): ");
 
-    l = getTableIDs();
-    MIDInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
-    MIDInPick.setEditable(true);
+    midIn = new JTextField(15);
 
-    memStatus = new JLabel("Status: ");
+    status = new JLabel("Status: ");
     fName = new JLabel("First Name: ");
-    fNameIn = new JTextField("", 15);
+    fNameIn = new JTextField(15);
     lName = new JLabel("Last Name: ");
-    lNameIn = new JTextField("", 15);
+    lNameIn = new JTextField(15);
     address = new JLabel("Address: ");
-    addressIn = new JTextField("", 15);
+    addressIn = new JTextField(15);
     contact = new JLabel("Contact Number: ");
-    contactIn = new JTextField("", 15);
+    contactIn = new JTextField(15);
 
     editMem = new JButton("Edit Member!");
 
@@ -136,38 +130,39 @@ public class ManageMembers extends TableOf {
       jtIns.get(i).setEditable(false);
     }
     editMem.setEnabled(false);
-
-    MIDInPick.addActionListener(new ActionListener() {
+    midIn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String qMID = (String) MIDInPick.getSelectedItem();
+        qMID = midIn.getText();
 
-        Map<String, String> res = selectRow(qMID);
+        if (validateID(qMID)) {
 
-        if (res != null) {
+          Map<String, String> res = selectRow(qMID);
+
           editMem.setEnabled(true);
           int i = 0;
           for (String str : res.values()) {
             jtIns.get(i).setText(str);
             jtIns.get(i).setEditable(true);
             i++;
+            status.setText("<html>Status: <font color=green>Success</html>");
           }
-          memStatus.setText("<html>Status: <font color=green>Success</html>");
         } else {
           for (int i = 0; i < jtIns.size(); i++) {
             jtIns.get(i).setEditable(false);
             jtIns.get(i).setText("");
           }
           editMem.setEnabled(false);
-          memStatus.setText("<html>Status: <font color=red>Invalid</html>");
+          status.setText("<html>Status: <font color=red>Invalid</html>");
         }
+
       }
     });
 
     editMem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String qMID = (String) MIDInPick.getSelectedItem();
+        qMID = midIn.getText();
 
         ArrayList<String> jtTxt = new ArrayList<String>();
         for (int i = 0; i < jtIns.size(); i++) {
@@ -178,30 +173,27 @@ public class ManageMembers extends TableOf {
 
         if (res) {
           editMem.setEnabled(true);
-          memStatus.setText("<html>Status: <font color=green>Success</html>");
+          status.setText("<html>Status: <font color=green>Success</html>");
         } else {
-          memStatus.setText("<html>Status: <font color=red>Check input fields</html>");
+          status.setText("<html>Status: <font color=red>Check input fields</html>");
         }
 
         for (int i = 0; i < jtIns.size(); i++) {
           editMem.setEnabled(false);
-          jtIns.get(i).setEnabled(false);
+          jtIns.get(i).setEditable(false);
           jtIns.get(i).setText("");
         }
 
-        // refresh table
-        memJTbl.setModel(setupTable());
       }
     });
 
     if (getTableRowNum("members") == 0) {
       editMem.setEnabled(false);
-      memStatus.setText("Status: No Members");
+      status.setText("Status: No Members");
     }
 
     pnl.add(MIDVal);
-    pnl.add(MIDInPick, "grow, right");
-    pnl.add(memStatus, "span");
+    pnl.add(midIn);
     pnl.add(fName);
     pnl.add(fNameIn);
     pnl.add(lName);
@@ -210,6 +202,7 @@ public class ManageMembers extends TableOf {
     pnl.add(addressIn);
     pnl.add(contact);
     pnl.add(contactIn);
+    pnl.add(status, "span");
     pnl.add(editMem, "skip, split, right");
 
     frm.add(pnl);
@@ -227,39 +220,40 @@ public class ManageMembers extends TableOf {
     pnl.setLayout(new MigLayout("wrap", "[][]", ""));
 
     memID = new JLabel("Member ID(MID): ");
-    l = getTableIDs();
-    MIDInPick = new JComboBox<String>(l.toArray(new String[l.size()]));
-    MIDInPick.setEditable(true);
-    memStatus = new JLabel("Status: ");
+    midIn = new JTextField(15);
+    status = new JLabel("Status: ");
 
     remMem = new JButton("Remove Member!");
     remMem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String qMID = (String) MIDInPick.getSelectedItem();
+        qMID = midIn.getText();
 
-        boolean isDeleted = deleteRow(qMID);
+        if (validateID(qMID)) {
+          Map<String, String> ibData = new ManageIssBooks().selectRow(1, qMID);
+          Map<String, String> memData = selectRow(qMID);
+          if (ibData.isEmpty()) {
+            confirm(qMID, memData.get("lastName"));
 
-        if (isDeleted) {
-          memStatus.setText("<html>Status: <font color=green>Success</html>");
+            status.setText("<html>Status: <font color=green>ID found</html>");
+          } else {
+            status.setText("<html>Status: <font color=red>Member still has borrowed book(s)</html>");
+          }
         } else {
-          memStatus.setText("<html>Status: <font color=red>Unable to remove</html>");
+          status.setText("<html>Status: <font color=red>Invalid ID</html>");
         }
-
-        // refresh table
-        memJTbl.setModel(setupTable());
       }
     });
 
     if (getTableRowNum("members") == 0) {
-      MIDInPick.setEnabled(false);
+      midIn.setEditable(false);
       remMem.setEnabled(false);
-      memStatus.setText("Status: No members");
+      status.setText("Status: No members");
     }
 
     pnl.add(memID);
-    pnl.add(MIDInPick, "grow");
-    pnl.add(memStatus, "span");
+    pnl.add(midIn);
+    pnl.add(status, "span");
     pnl.add(remMem, "skip, split, right");
 
     frm.add(pnl);
@@ -272,21 +266,37 @@ public class ManageMembers extends TableOf {
   @Override
   public JPanel getPanel() {
     System.out.println("starting with db " + dbTable);
-    memJTbl = new JTable();
-
-    memJTbl.setModel(setupTable());
-    memJTbl.getTableHeader().setReorderingAllowed(false);
-    memJTbl.setAutoCreateRowSorter(true);
-    memJTbl.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-    pane = new JScrollPane(memJTbl);
 
     panel = new JPanel();
 
-    addBut = new JButton("Add");
-    addBut.addActionListener(new ActionListener() {
+    panel.setLayout(new MigLayout("fill, insets 5 5 5 5", ""));
+    panel.add(addMember(), "grow, wrap");
+    panel.add(showTable(), "grow");
+
+    return panel;
+
+  }
+
+  public JPanel showTable() {
+    l = getTableColName();
+    pickFilter = new JComboBox<String>(col);
+
+    JLabel searchL = new JLabel("Search: ");
+    searchIn = new JTextField(15);
+    table = new JTable();
+
+    table.setModel(setupTable());
+    table.getTableHeader().setReorderingAllowed(false);
+    table.setAutoCreateRowSorter(true);
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+    pane = new JScrollPane(table);
+
+    searchFilter = new JButton("Search");
+    searchFilter.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        addMember();
+        setData(searchIn.getText(), l.get(pickFilter.getSelectedIndex()));
+        table.setModel(setupTable());
       }
     });
     editBut = new JButton("Edit");
@@ -301,14 +311,17 @@ public class ManageMembers extends TableOf {
         removeMember();
       }
     });
-    panel.setLayout(new MigLayout("fill, insets 0 0 0 0", "", "[100%][]"));
-    panel.add(pane, "wrap, grow");
-    panel.add(addBut, "shrink, split, right");
-    panel.add(editBut);
-    panel.add(remBut);
 
-    return panel;
+    pnl = new JPanel();
+    pnl.setLayout(new MigLayout("fill, insets 5 5 5 5", "", "[][100%][]"));
+    pnl.add(searchL, "split");
+    pnl.add(searchIn, "growx");
+    pnl.add(pickFilter);
+    pnl.add(searchFilter, "wrap");
+    pnl.add(pane, "wrap, grow");
+    pnl.add(editBut, "split, right");
+    pnl.add(remBut);
 
+    return pnl;
   }
-
 }
