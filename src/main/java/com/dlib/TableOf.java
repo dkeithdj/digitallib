@@ -1,5 +1,7 @@
 package com.dlib;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalDateTime;
@@ -12,14 +14,31 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.*;
 
+import net.miginfocom.swing.MigLayout;
+
 public class TableOf extends Utils {
+  protected JPanel pnl;
+  protected JFrame frm;
+
+  protected JButton searchFilter, showTbl;
+  protected JLabel confirmAct, status;
+  protected JButton confButton;
+  protected JTextField confirmActIn;
+  protected JComboBox<String> pickFilter;
+  protected JTextField searchIn;
+
   protected String dbTable, id;
   protected String[] col;
+  protected String[][] data;
   private ArrayList<String> head;
 
   // Manage start
@@ -28,7 +47,7 @@ public class TableOf extends Utils {
   protected JButton addBut, editBut, remBut;
   // Manage end
 
-  public static JTable bookJTbl, memJTbl, issbookJTbl;
+  protected JTable table;
 
   protected Map<String, String> selectOutPut;
   protected ArrayList<String> l;
@@ -142,12 +161,16 @@ public class TableOf extends Utils {
   // selects the row of the selected ID
   // returns a Map in order for easy fetching of data when choosing a value
   public Map<String, String> selectRow(String ID) {
+    return this.selectRow(0, ID);
+  }
+
+  public Map<String, String> selectRow(int index, String ID) {
     try {
       con = connectToDB();
 
       Map<String, String> qryOutPut = new LinkedHashMap<String, String>();
 
-      String qry = "SELECT * FROM " + dbTable + " WHERE " + head.get(0) + "=" + ID;
+      String qry = "SELECT * FROM " + dbTable + " WHERE " + head.get(index) + "=" + ID;
 
       PreparedStatement pstmt = con.prepareStatement(qry);
       System.out.println(qry);
@@ -174,6 +197,23 @@ public class TableOf extends Utils {
 
   }
 
+  // validates an ID input if it exists in the database
+  public boolean validateID(String ID) {
+    try {
+      con = connectToDB();
+      String qry = "SELECT " + head.get(0) + " FROM " + dbTable + " WHERE " + head.get(0) + "=" + ID;
+      PreparedStatement pstmt = con.prepareStatement(qry);
+      pstmt.executeUpdate("USE library");
+      ResultSet rs = pstmt.executeQuery(qry);
+
+      return (rs.next()) ? true : false;
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
   // converts a Map to an arraylist
   protected ArrayList<String> convertToList(Map<String, String> hashOut) {
     Collection<String> val = hashOut.values();
@@ -181,51 +221,47 @@ public class TableOf extends Utils {
     return valL;
   }
 
-  // Gets the table IDs (usually used in JComboBox)
-  public ArrayList<String> getTableIDs() {
-    ArrayList<String> IDs = new ArrayList<String>();
-    try {
-      con = connectToDB();
+  // sets data to be used by jtable
+  public String[][] setData(String srch, String category) {
 
-      String qry = "SELECT " + head.get(0) + " FROM " + dbTable;
-
-      Statement pstmt = con.createStatement();
-      pstmt.executeUpdate("USE library");
-
-      ResultSet rs = pstmt.executeQuery(qry);
-
-      while (rs.next()) {
-        IDs.add(rs.getString(head.get(0)));
-      }
-
-      return IDs;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  // setups the model for the JTable
-  public DefaultTableModel setupTable() {
     try {
       con = connectToDB();
       Statement stmt = con.createStatement();
       stmt.executeUpdate("USE library");
-      ResultSet rs = stmt.executeQuery("SELECT * FROM " + dbTable);
 
-      Object[] headers = head.toArray();
+      // This query selects rows that match the input
+      String qry1 = "SELECT * FROM " + dbTable + " WHERE " + category + " LIKE '" + srch + "%'";
+      // gets the count of of the results on qry1 to be used as initial row value in
+      // the data[][]
+      ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + "(" + qry1 + ")" + "AS totalCount");
+      rs.next();
+      int colCount = rs.getInt(1);
 
-      String data[][] = new String[getTableRowNum(dbTable)][col.length];
+      data = new String[colCount][col.length];
+
+      Statement nstmt = con.createStatement();
+      rs = nstmt.executeQuery(qry1);
 
       int i = 0;
       while (rs.next()) {
-        for (int x = 0; x < headers.length; x++) {
-          data[i][x] = rs.getString(headers[x].toString());
+        for (int x = 0; x < head.size(); x++) {
+          data[i][x] = rs.getString(head.get(x));
         }
         i++;
       }
 
       con.close();
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return data;
+
+  }
+
+  // setups the model for the JTable
+  public DefaultTableModel setupTable() {
+    try {
 
       return new DefaultTableModel(data, col) {
         @Override
@@ -247,13 +283,49 @@ public class TableOf extends Utils {
     return this.getTableRowNum(dbTable);
   }
 
+  // confirms removal of a row by typing in the desired input
+  protected void confirm(final String id, final String conf) {
+
+    confirmAct = new JLabel("<html>Please type <u>" + conf + "</u> to confirm</html>");
+    confirmActIn = new JTextField(15);
+    status = new JLabel("");
+    confButton = new JButton("Confirm Remove");
+    confButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (conf.equals(confirmActIn.getText())) {
+          deleteRow(id);
+          frm.dispose();
+        } else {
+          status.setText("<html><font color=red>Input does not match</html>");
+          confirmActIn.setText("");
+        }
+      }
+    });
+
+    frm = new JFrame("Confirmation");
+    pnl = new JPanel();
+    pnl.setLayout(new MigLayout("fill,wrap", "", "[][][]"));
+
+    pnl.add(confirmAct, "span, center");
+    pnl.add(confirmActIn, "span, growx");
+    pnl.add(status, "span");
+    pnl.add(confButton, "skip, split, right");
+
+    frm.add(pnl);
+    frm.setVisible(true);
+    frm.setSize(300, 150);
+    frm.setLocationRelativeTo(null);
+    frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+  }
+
   public int getTableRowNum(String tableName) {
 
     try {
       con = connectToDB();
       Statement stmt = con.createStatement();
       stmt.executeUpdate("USE library");
-      ResultSet rs = stmt.executeQuery("select count(*) from " + tableName);
+      ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + tableName);
       rs.next();
       return rs.getInt(1);
     } catch (Exception e) {
@@ -263,6 +335,10 @@ public class TableOf extends Utils {
   }
 
   // Function that gets the column titles from the database
+  public ArrayList<String> getTableColName() {
+    return this.getTableColName(dbTable);
+  }
+
   public ArrayList<String> getTableColName(String tableName) {
     int colCount = 0;
     ArrayList<String> col = new ArrayList<String>();
@@ -299,15 +375,6 @@ public class TableOf extends Utils {
     LocalDateTime today = LocalDateTime.now();
     String dateToday = today.format(dfmt);
     return dateToday;
-  }
-
-  // Refreshes the tables after there're changes happend such as
-  // adding,editing,removing data
-  // Made it static so that they can share the same value
-  public void refreshTable() {
-    bookJTbl.setModel(new ManageBooks().setupTable());
-    memJTbl.setModel(new ManageMembers().setupTable());
-    issbookJTbl.setModel(new ManageIssBooks().setupTable());
   }
 
 }
