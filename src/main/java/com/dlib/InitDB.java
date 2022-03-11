@@ -30,8 +30,9 @@ public class InitDB extends Utils {
           + "firstName VARCHAR(150) NOT NULL," + "lastName VARCHAR(150) NOT NULL," + "address VARCHAR(150) NOT NULL,"
           + "contact VARCHAR(100) NOT NULL)";
       String qryB = "CREATE TABLE books(" + "b_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-          + "title VARCHAR(100) NOT NULL," + "author VARCHAR(100) NOT NULL," + "genre VARCHAR(100) NOT NULL,"
-          + "quantity INT NOT NULL," + "issued INT NOT NULL," + "publishYear VARCHAR(50) NOT NULL)";
+          + "title VARCHAR(100) NOT NULL," + "author VARCHAR(100) NOT NULL," + "isbn VARCHAR(100) NOT NULL,"
+          + "genre VARCHAR(100) NOT NULL," + "quantity INT NOT NULL," + "issued INT NOT NULL,"
+          + "publishYear VARCHAR(50) NOT NULL)";
       String qryIB = "CREATE TABLE issuedBooks(" + "ib_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
           + "m_id INT NOT NULL," + "b_id INT NOT NULL," + "brwrLName VARCHAR(50) NOT NULL,"
           + "bookTitle VARCHAR(50) NOT NULL," + "issuedDate VARCHAR(50) NOT NULL," + "borrowPeriod INT NOT NULL,"
