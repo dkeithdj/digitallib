@@ -198,7 +198,7 @@ public class TableOf extends Utils {
   }
 
   // validates an ID input if it exists in the database
-  public boolean validateID(String ID) {
+  protected boolean validateID(String ID) {
     try {
       con = connectToDB();
       String qry = "SELECT " + head.get(0) + " FROM " + dbTable + " WHERE " + head.get(0) + "=" + ID;
@@ -222,7 +222,7 @@ public class TableOf extends Utils {
   }
 
   // sets data to be used by jtable
-  public String[][] setData(String srch, String category) {
+  protected String[][] setData(String srch, String category) {
 
     try {
       con = connectToDB();
@@ -278,11 +278,6 @@ public class TableOf extends Utils {
     return null;
   }
 
-  // Function that gets the number of rows in the table
-  public int getTableRowNum() {
-    return this.getTableRowNum(dbTable);
-  }
-
   // confirms removal of a row by typing in the desired input
   protected void confirm(final String id, final String conf) {
 
@@ -317,6 +312,11 @@ public class TableOf extends Utils {
     frm.setSize(300, 150);
     frm.setLocationRelativeTo(null);
     frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+  }
+
+  // Function that gets the number of rows in the table
+  public int getTableRowNum() {
+    return this.getTableRowNum(dbTable);
   }
 
   public int getTableRowNum(String tableName) {
