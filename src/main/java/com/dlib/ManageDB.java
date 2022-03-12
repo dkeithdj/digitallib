@@ -128,7 +128,7 @@ public class ManageDB extends TableOf {
 
     pnl.add(filenamePrmpt);
     pnl.add(fileNameIn);
-    pnl.add(statusImport, "wrap");
+    pnl.add(statusImport, "spanx");
     pnl.add(importConfirm, "skip, split, right");
 
     frm.add(pnl);

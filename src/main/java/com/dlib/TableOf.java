@@ -116,7 +116,6 @@ public class TableOf extends Utils {
       String qry = "UPDATE " + dbTable + " SET " + base + " WHERE " + head.get(0) + "=" + ID;
 
       PreparedStatement pstmt = con.prepareStatement(qry);
-      System.out.println(qry);
       pstmt.executeUpdate("USE library");
 
       for (int i = 0; i < jtTxt.size(); i++) {
@@ -173,7 +172,6 @@ public class TableOf extends Utils {
       String qry = "SELECT * FROM " + dbTable + " WHERE " + head.get(index) + "=" + ID;
 
       PreparedStatement pstmt = con.prepareStatement(qry);
-      System.out.println(qry);
       pstmt.executeUpdate("USE library");
       ResultSet rs = pstmt.executeQuery(qry);
       if (rs.next()) {

@@ -55,11 +55,10 @@ public class ManageMembers extends TableOf {
     jtIns.add(addressIn);
     jtIns.add(contactIn);
 
-    final ArrayList<String> jtTxt = new ArrayList<String>();
-
     addMember = new JButton("Add Member!");
     addMember.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        ArrayList<String> jtTxt = new ArrayList<String>();
 
         for (int i = 0; i < jtIns.size(); i++) {
           jtTxt.add(jtIns.get(i).getText());
@@ -265,7 +264,6 @@ public class ManageMembers extends TableOf {
 
   @Override
   public JPanel getPanel() {
-    System.out.println("starting with db " + dbTable);
 
     panel = new JPanel();
 

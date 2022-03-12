@@ -61,11 +61,10 @@ public class ManageBooks extends TableOf {
     jtIns.add(issuedIn);
     jtIns.add(pubYearIn);
 
-    final ArrayList<String> jtTxt = new ArrayList<String>();
-
     addBook = new JButton("Add Book!");
     addBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        ArrayList<String> jtTxt = new ArrayList<String>();
 
         for (int i = 0; i < jtIns.size(); i++) {
           jtTxt.add(jtIns.get(i).getText());
@@ -303,7 +302,6 @@ public class ManageBooks extends TableOf {
 
   @Override
   public JPanel getPanel() {
-    System.out.println("starting with db " + dbTable);
 
     panel = new JPanel();
 

@@ -30,6 +30,9 @@ public class ManageIssBooks extends TableOf {
   private static TableOf manBook = new ManageBooks();
   private ArrayList<String> l;
 
+  private String sqMID = "";
+  private String sqBID = "";
+
   private ArrayList<JTextField> jtIns;
   private ArrayList<String> jtTxts;
   public String issueBooksColumn[] = { "IBID", "MID", "BID", "LAST NAME", "BOOK TITLE", "DATE ISSUED", "DURATION",
@@ -74,11 +77,11 @@ public class ManageIssBooks extends TableOf {
     issBook.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 
-        String sqMID = midIn.getText();
-        String sqBID = bidIn.getText();
+        sqMID = midIn.getText();
+        sqBID = bidIn.getText();
         String sqDuration = durationIn.getText();
 
-        if (validateID(sqBID) && validateID(sqMID)) {
+        if (manMem.validateID(sqMID) && manBook.validateID(sqBID)) {
 
           Map<String, String> upMem = manMem.selectRow(sqMID);
           Map<String, String> upBook = manBook.selectRow(sqBID);
@@ -107,13 +110,15 @@ public class ManageIssBooks extends TableOf {
             ArrayList<String> valL = convertToList(upBook);
 
             manBook.updateRow(valL, sqBID);
+            status.setText("<html>Status: <font color=green>Book Issued</html>");
+          } else {
+            status.setText("<html>Status: <font color=red>Out of stock</html>");
           }
 
           midIn.setText("");
           bidIn.setText("");
           durationIn.setText("");
 
-          status.setText("<html>Status: <font color=green>Book Issued</html>");
         } else {
           status.setText("<html>Status: <font color=red> Check ID values</html>");
         }
@@ -206,7 +211,6 @@ public class ManageIssBooks extends TableOf {
 
           hashOut.replace("returnDate", getDateToday());
           hashOut.replace("overdued", isOverdued);
-          System.out.println(hashOut);
 
           retBook.setEnabled(true);
           int i = 0;
@@ -403,7 +407,6 @@ public class ManageIssBooks extends TableOf {
 
   @Override
   public JPanel getPanel() {
-    System.out.println("starting with db " + dbTable);
 
     panel = new JPanel();
 
