@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2022-03-12T02:41:00.188Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36" etag="VGxTfwhaL_AAVMSVo-EC" version="17.1.0" type="github">
+<mxfile host="app.diagrams.net" modified="2022-03-12T02:45:37.340Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36" etag="CG-IIJqYfEj18hUisqLX" version="17.1.0" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="1695" dy="1665" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1848" dy="1753" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -25,7 +25,7 @@
         <mxCell id="BT-sb1i7F7TTi-nkxCVp-14" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-12" vertex="1">
           <mxGeometry y="52" width="160" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="BT-sb1i7F7TTi-nkxCVp-15" value="+ ManageBooks()&#xa;+ addBook(): void&#xa;+ editBook(): void&#xa;+ removeBook(): void&#xa;+ showTable(): JPanel&#xa;+ getPanel(): JPanel" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-12" vertex="1">
+        <mxCell id="BT-sb1i7F7TTi-nkxCVp-15" value="+ ManageBooks()&#xa;+ addBook(): JPanel&#xa;+ editBook(): void&#xa;+ removeBook(): void&#xa;+ showTable(): JPanel&#xa;+ getPanel(): JPanel" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-12" vertex="1">
           <mxGeometry y="60" width="160" height="100" as="geometry" />
         </mxCell>
         <mxCell id="BT-sb1i7F7TTi-nkxCVp-16" value="Server" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
@@ -50,7 +50,7 @@
           <mxGeometry y="34" width="160" height="26" as="geometry" />
         </mxCell>
         <mxCell id="BT-sb1i7F7TTi-nkxCVp-28" value="AdminMenu" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="-130" y="120" width="160" height="60" as="geometry" />
+          <mxGeometry x="-130" y="110" width="160" height="60" as="geometry" />
         </mxCell>
         <mxCell id="BT-sb1i7F7TTi-nkxCVp-30" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-28" vertex="1">
           <mxGeometry y="26" width="160" height="8" as="geometry" />
@@ -59,16 +59,16 @@
           <mxGeometry y="34" width="160" height="26" as="geometry" />
         </mxCell>
         <mxCell id="BT-sb1i7F7TTi-nkxCVp-32" value="Table Management" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="-560" y="120" width="360" height="322" as="geometry" />
+          <mxGeometry x="-560" y="110" width="360" height="330" as="geometry" />
         </mxCell>
-        <mxCell id="BT-sb1i7F7TTi-nkxCVp-33" value="# dbTable: String&#xa;# id: String&#xa;- col: String[]&#xa;- head: ArrayList&lt;String&gt;&#xa;# selectOutPut: Map&lt;String,String&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-32" vertex="1">
+        <mxCell id="BT-sb1i7F7TTi-nkxCVp-33" value="# dbTable: String&#xa;# id: String&#xa;# col: String[]&#xa;- head: ArrayList&lt;String&gt;&#xa;# selectOutPut: Map&lt;String,String&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-32" vertex="1">
           <mxGeometry y="26" width="360" height="88" as="geometry" />
         </mxCell>
         <mxCell id="BT-sb1i7F7TTi-nkxCVp-34" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-32" vertex="1">
           <mxGeometry y="114" width="360" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="BT-sb1i7F7TTi-nkxCVp-35" value="+ TableOf(dbName: String)&#xa;+ setColNames(col: String[]): void&#xa;+ insertRow(jtTxt: ArrayList&lt;String&gt;): boolean&#xa;+ updateRow(jtTxt: ArrayList&lt;String&gt;, ID:String): boolean&#xa;+ deleteRow(ID: String): boolean&#xa;+ selectRow(ID: String): Map&lt;String,String&gt;&#xa;# convertToList(hashOut: Map&lt;String,String&gt;): ArrayList&lt;String&gt;&#xa;+ getTableIDs(): ArrayList&lt;String&gt;&#xa;+ setupTable(): DefaultTableModel&#xa;+ getTableRowNum(): int&#xa;+ getTableColName(tableName: String): ArrayList&lt;String&gt;&#xa;+ getDateToday(): String&#xa;+ refreshTable(): void&#xa;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-32" vertex="1">
-          <mxGeometry y="122" width="360" height="200" as="geometry" />
+        <mxCell id="BT-sb1i7F7TTi-nkxCVp-35" value="+ TableOf(dbName: String)&#xa;+ setColNames(col: String[]): void&#xa;+ insertRow(jtTxt: ArrayList&lt;String&gt;): boolean&#xa;+ updateRow(jtTxt: ArrayList&lt;String&gt;, ID:String): boolean&#xa;+ deleteRow(ID: String): boolean&#xa;+ selectRow(ID: String): Map&lt;String,String&gt;&#xa;# convertToList(hashOut: Map&lt;String,String&gt;): ArrayList&lt;String&gt;&#xa;# validateID(ID: String): boolean&#xa;+ getTableIDs(): ArrayList&lt;String&gt;&#xa;# setData(srch: String, category: String): String[][]&#xa;+ setupTable(): DefaultTableModel&#xa;+ getTableRowNum(): int&#xa;+ getTableColName(tableName: String): ArrayList&lt;String&gt;&#xa;+ getDateToday(): String&#xa;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-32" vertex="1">
+          <mxGeometry y="122" width="360" height="208" as="geometry" />
         </mxCell>
         <mxCell id="BT-sb1i7F7TTi-nkxCVp-36" value="Backup and Import" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="100" y="500" width="160" height="120" as="geometry" />
@@ -103,7 +103,7 @@
         <mxCell id="BT-sb1i7F7TTi-nkxCVp-46" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-44" vertex="1">
           <mxGeometry y="52" width="160" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="BT-sb1i7F7TTi-nkxCVp-47" value="+ ManageMembers()&#xa;+ addMember(): void&#xa;+ editMember(): void&#xa;+ removeMember(): void&#xa;+ showTable(): JPanel&#xa;+getPanel(): JPanel" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-44" vertex="1">
+        <mxCell id="BT-sb1i7F7TTi-nkxCVp-47" value="+ ManageMembers()&#xa;+ addMember(): JPanel&#xa;+ editMember(): void&#xa;+ removeMember(): void&#xa;+ showTable(): JPanel&#xa;+getPanel(): JPanel" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="BT-sb1i7F7TTi-nkxCVp-44" vertex="1">
           <mxGeometry y="60" width="160" height="100" as="geometry" />
         </mxCell>
         <mxCell id="BT-sb1i7F7TTi-nkxCVp-67" value="Extends" style="endArrow=block;endSize=16;endFill=0;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="BT-sb1i7F7TTi-nkxCVp-12" target="BT-sb1i7F7TTi-nkxCVp-32" edge="1">
